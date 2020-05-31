@@ -9,30 +9,30 @@ export class SOQL {
     private static fields: any;
     
     // TO Be used in a next version
-    private static insertText(getText: (i:number) => string, i: number = 0, wasEmpty: boolean = false): vscode.Position {
-        console.log('Inside insertText');
-        let activeEditor = vscode.window.activeTextEditor;
-        if (!activeEditor) { return; }
+    // private static insertText(getText: (i:number) => string, i: number = 0, wasEmpty: boolean = false): vscode.Position {
+    //     console.log('Inside insertText');
+    //     let activeEditor = vscode.window.activeTextEditor;
+    //     if (!activeEditor) { return; }
     
-        let sels = activeEditor.selections;
+    //     let sels = activeEditor.selections;
     
-        if (i > 0 && wasEmpty)
-        {
-            sels[i - 1] = new vscode.Selection(sels[i - 1].end, sels[i - 1].end);
-            activeEditor.selections = sels; // required or the selection updates will be ignored! 😱
-        }
+    //     if (i > 0 && wasEmpty)
+    //     {
+    //         sels[i - 1] = new vscode.Selection(sels[i - 1].end, sels[i - 1].end);
+    //         activeEditor.selections = sels; // required or the selection updates will be ignored! 😱
+    //     }
     
-        if (i < 0 || i >= sels.length) { return; }
+    //     if (i < 0 || i >= sels.length) { return; }
     
-        let isEmpty = sels[i].isEmpty;
-        activeEditor.edit(edit => edit.replace(sels[i], getText(i))).then(x => {
+    //     let isEmpty = sels[i].isEmpty;
+    //     activeEditor.edit(edit => edit.replace(sels[i], getText(i))).then(x => {
     
-            this.insertText(getText, i + 1, isEmpty);
-        });
-        const position = activeEditor.selection.active;
-        console.log('cursor position: ', position);
-        return position;
-    }
+    //         this.insertText(getText, i + 1, isEmpty);
+    //     });
+    //     const position = activeEditor.selection.active;
+    //     console.log('cursor position: ', position);
+    //     return position;
+    // }
 
     // To be used in a next version
     public static prepareAndInsertQuery() {
@@ -71,14 +71,15 @@ export class SOQL {
             }
             count++;
         }
-        query += `      FROM ${objectName}`;
+        query += `FROM ${objectName}`;
         return query;
     }
 
     public static prepare(node: SFTreeItem) {
         
         let filePath: string = '';
-        filePath = path.join(vscode.workspace.rootPath, `query.txt`);
+        const rootPath = vscode.workspace.rootPath || '';
+        filePath = path.join(rootPath, `query.txt`);
         fs.existsSync(filePath);
         
         if(node.contextValue === 'object') {

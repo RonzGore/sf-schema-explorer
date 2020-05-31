@@ -2,7 +2,8 @@
 	"name": "schema-explorer",
 	"displayName": "Salesforce Schema Explorer",
 	"description": "Salesforce Schema Explorer and Query Builder",
-	"version": "0.0.1",
+	"version": "0.0.5",
+	"publisher": "RohanGore",
 	"engines": {
 		"vscode": "^1.45.0"
 	},
@@ -18,8 +19,8 @@
 			"activitybar": [
 				{
 					"id": "sf-schema-explorer",
-					"title": "Explore",
-					"icon": "media/dep.svg"
+					"title": "Schema Explorer",
+					"icon": "media/schema.svg"
 				}
 			]
 		},
@@ -34,6 +35,14 @@
 		"commands": [
 			{
 				"command": "schemaExplorer.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "schemaExplorer.refreshNodeAndChildren",
 				"title": "Refresh",
 				"icon": {
 					"light": "resources/light/refresh.svg",
@@ -91,13 +100,13 @@
 			],
 			"view/item/context": [
 				{
-					"command": "schemaExplorer.refreshEntry",
+					"command": "schemaExplorer.refreshNodeAndChildren",
 					"when": "view == schemaExplorer && viewItem == connection",
 					"group": "inline"
 				},
 				{
-					"command": "schemaExplorer.checkConnection",
-					"when": "view == schemaExplorer && viewItem == connection",
+					"command": "schemaExplorer.refreshNodeAndChildren",
+					"when": "view == schemaExplorer && viewItem == object",
 					"group": "inline"
 				},
 				{
@@ -133,6 +142,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
+		"@types/lodash": "^4.14.154",
 		"@types/mocha": "^7.0.2",
 		"@types/node": "^13.11.0",
 		"@types/shelljs": "^0.8.8",
@@ -147,6 +157,6 @@
 	},
 	"dependencies": {
 		"@salesforce/core": "^2.4.1",
-		"shelljs": "^0.8.4"
+		"lodash": "^4.17.15"
 	}
 }

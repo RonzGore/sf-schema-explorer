@@ -17,11 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
 	const sFSchemaProvider = new SFSchemaProvider();
 	vscode.window.registerTreeDataProvider('schemaExplorer', sFSchemaProvider);
 	vscode.commands.registerCommand('schemaExplorer.refreshEntry', () => sFSchemaProvider.refresh());
-	vscode.commands.registerCommand('schemaExplorer.checkConnection', (node: SFTreeItem) => sFSchemaProvider.checkConnection(node));
+	vscode.commands.registerCommand('schemaExplorer.refreshNodeAndChildren', (node: SFTreeItem) => sFSchemaProvider.refreshNodeAndChildren(node));
 	// Todo: Implement in next version - ddescribe field info and object info in a web-view within VSCode
 	// vscode.commands.registerCommand('schemaExplorer.describeField',  (node: SFTreeItem) => SOQL.prepare(node));
 	vscode.commands.registerCommand('schemaExplorer.insertObject', (node: SFTreeItem) => SOQL.prepare(node));
-	// vscode.commands.registerCommand('extension.insertField', (moduleName) => vscode.window.showInformationMessage(`Successfully called edit entry on ${moduleName}.`));
 	vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem) => SOQL.prepare(node));
 }
 
