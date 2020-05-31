@@ -1,18 +1,18 @@
 # Salesforce Schema Explorer
 
-**Note that this is not official from Salesforce.
+**Note that this is not official extension from Salesforce.
 
-Provides ability to explore the schema, namely Objects and fields in a readable fromat from within the IDE. Also enables targetted retrieve of field changes made in Salesforce just by clicking on a refresh icon. This extension also enable users to generate simple SOQL from within the IDE. This extension requires users to have SalesforceDX CLI installed on their computer. This Extension works with both scratch orgs and Non-scratch orgs. 
+Provides ability to explore the schema, namely Objects and fields in a readable fromat from within the IDE. Also enables targetted retrieval of schema changes made in Salesforce just by clicking on a refresh icon. It also enable users to generate simple SOQL from within the IDE. This extension requires users to have SalesforceDX CLI installed on their computer and works with both scratch orgs and Non-scratch orgs. 
 
 It is highly recommended to use with Salesforce Extension Pack to get all the other good things salesforce official extension offers (https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode).
 
 # Requirements
 
 
-This vscode extension works only once you have installed Salesforce CLI on your computer.
+This VSCode extension works only once you have installed Salesforce CLI on your computer.
 
 1. Install SFDX CLI from https://developer.salesforce.com/tools/sfdxcli based on your operating system.
-2. VSCode version 1.40 and beyond.
+2. Requires VSCode version 1.40 and beyond.
 
 # Features
 
