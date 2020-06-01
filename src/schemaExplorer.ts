@@ -31,13 +31,9 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	}
 
 	getChildren(element?: SFTreeItem): Thenable<SFTreeItem[]> {
-		
-		//vscode.window.showInformationMessage('No SFTreeItem in empty workspace');
 		if (element) {
 			if(element.contextValue === this.OBJECT_CONTEXT) {
 				return Promise.resolve(this.getFields(element.connection, element.label));
-			// }else if(element.label !== 'Objects' && element.label !== 'Packages' ) {
-			// 	return Promise.resolve(this.getFixedChildren(element.description));
 			} else if(element.contextValue === this.CONNECTION_CONTEXT) {
 				return Promise.resolve(this.getSObjects(element.username));
 			}  else {
@@ -51,29 +47,41 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 	private async getConnections(): Promise<SFTreeItem[]> {
 		const connections: any[] | PromiseLike<any[]> = [];
-		const orgs: any[] = await Config.getOrgsInfo();
-		const sortedOrgs = sortBy(orgs, 'alias');
-		for(let count = 0; count< sortedOrgs.length; count++) {
-			const  description = sortedOrgs[count].connectedStatus === 'Connected'?
-				`${sortedOrgs[count].username}-Connected`: `${sortedOrgs[count].username}-Disconnected`;
-			
-			const connection = new SFTreeItem(sortedOrgs[count].alias, description, vscode.TreeItemCollapsibleState.Collapsed);
-			if(sortedOrgs[count].connectedStatus !== 'Connected') {
-				connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
-				'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'dark',
-				'disconnected.svg'));
+		try { 
+			const orgs: any[] = await Config.getOrgsInfo();
+			const sortedOrgs = sortBy(orgs, 'alias');
+			for(let count = 0; count< sortedOrgs.length; count++) {
+				const  description = sortedOrgs[count].connectedStatus === 'Connected'?
+					`${sortedOrgs[count].username}-Connected`: `${sortedOrgs[count].username}-Disconnected`;
+				
+				const connection = new SFTreeItem(sortedOrgs[count].alias, description, vscode.TreeItemCollapsibleState.Collapsed);
+				if(sortedOrgs[count].connectedStatus !== 'Connected') {
+					connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
+					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'dark',
+					'disconnected.svg'));
+				}
+				connection.username = sortedOrgs[count].username;
+				connection.accessToken = sortedOrgs[count].accessToken;
+				connection.setContext(this.CONNECTION_CONTEXT);
+				connections.push(connection);
 			}
-			connection.username = sortedOrgs[count].username;
-			connection.accessToken = sortedOrgs[count].accessToken;
-			connection.setContext(this.CONNECTION_CONTEXT);
-			connections.push(connection);
-		}
-
-		orgs.forEach((key, value) => {
-			
-			
-		});
-		return connections;
+			return connections;
+		} catch(error) {
+			let message = error.message
+            console.log(message);
+            if(message.includes('Command failed: SFDX_JSON_TO_STDOUT=true sfdx force:org:list')) {
+				message = 'Something is not right, please make sure you have at least one authenticated org.'
+				if(message.includes('command not found')) {
+					message = 'It seems SFDX CLI is not found. Please install it from https://developer.salesforce.com/tools/sfdxcli.'
+					vscode.window.showErrorMessage(message, {modal: true});
+					return connections;
+				}
+				vscode.window.showInformationMessage(message);
+				return connections;
+			}
+			vscode.window.showErrorMessage(message);
+			return connections;
+        }
 	}
 
 	private async getSObjects(username: string) : Promise<SFTreeItem[]> {
@@ -96,11 +104,11 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 	private async getFields(conn: sfcore.Connection, sObjectName: string) : Promise<SFTreeItem[]> {
 		const metadata = await Config.fetchFields(conn, sObjectName);
-		// const sortedMetadata = metadata.sort(this.sortFn);
 		const sortedMetadata = sortBy(metadata, 'fullName');
 		const sObjectFields: SFTreeItem[] = [];
 		for(let count=0; count < sortedMetadata.length; count++ ) {
-			const sObjectField = new SFTreeItem(sortedMetadata[count].fullName, 
+		const metadata = await Config.fetchFields(conn, sObjectName);
+			const sObjectField = new SFTreeItem(sortedMetadata[count].fullName.replace(`${sObjectName}.`, ''), 
 				sortedMetadata[count].fullName, vscode.TreeItemCollapsibleState.None);
 			sObjectField.setCommand({
 					command: 'extension.insertField',
@@ -118,18 +126,6 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	public checkConnection(node: SFTreeItem) {
 		node.setDescription(`${node.description}-Inactive`);
 	}
-
-	// private getFixedChildren(username: string): SFTreeItem[] {
-	// 	const connections: SFTreeItem[] = [];
-	// 	const objects = new SFTreeItem('Objects', 'List of Salesforce Objects', vscode.TreeItemCollapsibleState.Collapsed);
-	// 	objects.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark', 'folder-container.svg'), null);
-	// 	objects.username = username;
-	// 	connections.push(objects);
-	// 	const packages = new SFTreeItem('Packages', 'List of Deployable packages', vscode.TreeItemCollapsibleState.Collapsed);
-	// 	packages.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark', 'folder-dist.svg'), null);
-	// 	connections.push(packages);
-	// 	return connections;
-	// }
 }
 
 export class SFTreeItem extends vscode.TreeItem {

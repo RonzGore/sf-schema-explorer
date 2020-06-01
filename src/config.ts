@@ -18,6 +18,7 @@ export class Config {
             const orgs = [...nonScratchOrgs, ...scratchOrgs];
             return orgs;
         } else {
+            let message = jsonOutput
             vscode.window.showErrorMessage(jsonOutput);
         }
     }

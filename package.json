@@ -5,7 +5,7 @@
 	"version": "0.0.5",
 	"publisher": "RohanGore",
 	"engines": {
-		"vscode": "^1.45.0"
+		"vscode": "^1.35.0"
 	},
 	"categories": [
 		"Other"
