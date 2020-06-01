@@ -4,6 +4,7 @@
 	"description": "Salesforce Schema Explorer and Query Builder",
 	"version": "0.0.5",
 	"publisher": "RohanGore",
+	"repository": "https://github.com/RonzGore/sf-schema-explorer",
 	"engines": {
 		"vscode": "^1.35.0"
 	},
