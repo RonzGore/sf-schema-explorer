@@ -67,7 +67,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			}
 			return connections;
 		} catch(error) {
-			let message = error.message
+			let message = error.message;
             console.log(message);
             if(message.includes('Command failed: SFDX_JSON_TO_STDOUT=true sfdx force:org:list')) {
 				message = 'Something is not right, please make sure you have at least one authenticated org.'

@@ -2,7 +2,8 @@
 	"name": "schema-explorer",
 	"displayName": "Salesforce Schema Explorer",
 	"description": "Salesforce Schema Explorer and Query Builder",
-	"version": "0.0.5",
+	"icon": "media/logo-64.png",
+	"version": "0.1.1",
 	"publisher": "RohanGore",
 	"repository": "https://github.com/RonzGore/sf-schema-explorer",
 	"engines": {
@@ -147,7 +148,7 @@
 		"@types/mocha": "^7.0.2",
 		"@types/node": "^13.11.0",
 		"@types/shelljs": "^0.8.8",
-		"@types/vscode": "^1.45.0",
+		"@types/vscode": "^1.35.0",
 		"@typescript-eslint/eslint-plugin": "^2.30.0",
 		"@typescript-eslint/parser": "^2.30.0",
 		"eslint": "^6.8.0",
