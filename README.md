@@ -1,6 +1,6 @@
 # Salesforce Schema Explorer
 
-![Logo](./media/logo-64.png)
+![Logo](./media/logo-128.png)
 
 **Disclaimer** This is not an official extension from Salesforce.
 
