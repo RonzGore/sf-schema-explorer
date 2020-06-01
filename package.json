@@ -3,7 +3,7 @@
 	"displayName": "Salesforce Schema Explorer",
 	"description": "Salesforce Schema Explorer and Query Builder",
 	"icon": "media/logo-128.png",
-	"version": "0.1.2",
+	"version": "0.1.5",
 	"publisher": "RohanGore",
 	"repository": "https://github.com/RonzGore/sf-schema-explorer",
 	"engines": {
