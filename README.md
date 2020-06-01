@@ -9,7 +9,15 @@
 
 **Disclaimer** This is not an official extension from Salesforce.
 
+First of all thanks to @NehaMishraGitHub for all her contribution and I hope to see more PRs coming from her.
+I always wanted this feature to be part of any Salesforce based IDEs from the day
+I stopped using Force.com IDE (an eclipse plugin). It used to have a nice Schema Explorer and Query Builder.
+This extension is in early beta kind of a phase and in no way close to it's inspiration (Force.com IDEs Schema Explorer). 
+Also it does not guarantee production grade results and may have bugs. But still giving it a try will not break your system 
+or project!:laughing: :stuck_out_tongue_closed_eyes: So please give it a try.
+
 Provides ability to explore the schema, namely Objects and fields in a readable format from within the IDE. Also enables targetted retrieval of schema changes made in Salesforce just by clicking on a refresh icon. It also enable users to generate simple SOQL from within the IDE. This extension requires users to have SalesforceDX CLI installed on their computer and works with both scratch orgs and Non-scratch orgs. 
+
 
 It is highly recommended to use with Salesforce Extension Pack to get all the other good things [salesforce official extension](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode) offers.
 
@@ -43,10 +51,12 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 # Issue Reporting/Feature Requests
 
-You can reach out to me via my twitter handle @RonzGore or create a Git Hub :octocat: Issue.
+You can reach out to me via my twitter handle @RonzGore or create a Git Hub :octocat: Issue [here](https://github.com/RonzGore/sf-schema-explorer/issues).
+Please find the templates for issues and feature requests [here](https://github.com/RonzGore/sf-schema-explorer/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [here](https://github.com/RonzGore/sf-schema-explorer/blob/master/.github/ISSUE_TEMPLATE/feature_request.md).
 This is not a commercial Software and I built it during my spare time to solve a simple problem of
-looking into Salesforce Object and field names without getting out of my IDE. 
-There are plans to improve and adding more feature (Please go through the Roadmap section) 
+looking into Salesforce Object and field names without getting out of my IDE. So I may not be able
+to immediately respond back to an issue or a feature.
+Though there are definitely plans to improve and adding more feature (Please go through the Roadmap section) 
 and if you feel there is a feature which is worth, feel free to reach out to me or contribute 
 as this Software is open source. PRs are super welcome!
 
@@ -65,9 +75,4 @@ Initial Version 0.1.5 released
 
 
 # 
-**Note**: I always wanted this feature to be part of any Salesforce based IDEs from the day
-I stopped using Force.com IDE (an eclipse plugin). It used to have a nice Schema Explorer and Query Builder.
-The extension is in early beta kind of a phase and in no way close to it's inspiration (Force.com IDEs Schema Explorer). 
-Also it does not guarantee production grade results and may have bugs. But still giving it a try will not break your system 
-or project!:laughing: :stuck_out_tongue_closed_eyes: So please give it a try.
 Enjoy!!
