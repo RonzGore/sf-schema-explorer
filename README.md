@@ -9,7 +9,7 @@
 
 **Disclaimer** This is not an official extension from Salesforce.
 
-First of all thanks to @NehaMishraGitHub for all her contribution and I hope to see more PRs coming from her.
+First of all thanks to [Neha Mishra](https://github.com/NehaMishraGitHub) for all her contribution and I hope to see more PRs coming from her.
 I always wanted this feature to be part of any Salesforce based IDEs from the day
 I stopped using Force.com IDE (an eclipse plugin). It used to have a nice Schema Explorer and Query Builder.
 This extension is in early beta kind of a phase and in no way close to it's inspiration (Force.com IDEs Schema Explorer). 
