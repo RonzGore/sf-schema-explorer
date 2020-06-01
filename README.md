@@ -43,8 +43,8 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 # Issue Reporting/Feature Requests
 
-You can reach out to me via my twitter handle @RonzGore or create a Git Hub Issue
-This is not a commercial Software and I build it during my spare time to solve a simple problem of
+You can reach out to me via my twitter handle @RonzGore or create a Git Hub :octocat: Issue.
+This is not a commercial Software and I built it during my spare time to solve a simple problem of
 looking into Salesforce Object and field names without getting out of my IDE. 
 There are plans to improve and adding more feature (Please go through the Roadmap section) 
 and if you feel there is a feature which is worth, feel free to reach out to me or contribute 
