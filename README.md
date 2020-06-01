@@ -31,6 +31,8 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 # Features
 
+![Schema Explorer](./media/sf-schema-explorer.gif)
+
 1. **Get a list of all the orgs which has been authenticated using SFDX CLI**
 
 ![List all Orgs](./media/connections.png)
@@ -56,7 +58,7 @@ Please find the templates for issues and feature requests [here](https://github.
 This is not a commercial Software and I built it during my spare time to solve a simple problem of
 looking into Salesforce Object and field names without getting out of my IDE. So I may not be able
 to immediately respond back to an issue or a feature.
-Though there are definitely plans to improve and adding more feature (Please go through the Roadmap section) 
+Though there are definitely plans to improve and adding more features (Please go through the Roadmap section) 
 and if you feel there is a feature which is worth, feel free to reach out to me or contribute 
 as this Software is open source. PRs are super welcome!
 
@@ -64,7 +66,7 @@ as this Software is open source. PRs are super welcome!
 
 1. Orgs Management(View more info,create,delete, clone and edit)
 2. Get Objects and fields metadata info (whether the field is updateable etc.)
-3. Salesforce Deployable Package Creation and Management (Watch out for this, this one is my favorite!) :hearts:
+3. Salesforce Deployable Package Creation and Management. Once this is out, the extension name made need to be changed as then it would no longer just be a Schema Explorer (This one is my favorite and my Admin friends will love it!) :hearts:
 4. Inline insertion of fields and queries in your code files
 5. Support for complex queries with relationships
 6. Your requested or contributed features! :+1:
