@@ -55,11 +55,19 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 					`${sortedOrgs[count].username}-Connected`: `${sortedOrgs[count].username}-Disconnected`;
 				
 				const connection = new SFTreeItem(sortedOrgs[count].alias, description, vscode.TreeItemCollapsibleState.Collapsed);
-				if(sortedOrgs[count].connectedStatus !== 'Connected') {
+				if(sortedOrgs[count].connectedStatus !== 'Connected' && 
+					sortedOrgs[count].connectedStatus !== 'Unknown') {
 					connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
 					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'dark',
 					'disconnected.svg'));
 				}
+				if(sortedOrgs[count].connectedStatus === 'Unknown' && 
+					sortedOrgs[count].status !== 'Active') {
+					connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
+					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'dark',
+					'disconnected.svg'));
+				}
+
 				connection.username = sortedOrgs[count].username;
 				connection.accessToken = sortedOrgs[count].accessToken;
 				connection.setContext(this.CONNECTION_CONTEXT);
