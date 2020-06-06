@@ -32,19 +32,14 @@ export class Config {
 
     public static async getObjects(conn : sfcore.Connection) {
         const types = [{type: 'CustomObject'}];
-        const metadata = await conn.metadata.list(types, '48.0');
+        const metadata = await (await conn.describeGlobal()).sobjects;
         return metadata;
     }
 
     public static async fetchFields(conn : any, sObjectName: string) {
-        const types = [{type: 'CustomField', folder: sObjectName}];
-        const metadata = await conn.metadata.list(types, '48.0');
-        let fieldsInfo : any[] = [];
-        if(typeof metadata === 'object' && Array.isArray(metadata)) {
-            fieldsInfo = [...metadata];
-        } else if(typeof metadata === 'object') {
-            fieldsInfo.push(metadata);
-        }
+        console.log(sObjectName);
+        const fieldsInfo = await (await conn.describe(sObjectName)).fields;
+        console.log(fieldsInfo);
         return fieldsInfo;
     }
 }

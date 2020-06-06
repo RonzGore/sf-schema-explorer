@@ -93,7 +93,7 @@ export class SOQL {
                 SOQL.objectName = node.parentNode;
                 SOQL.fields = new Set();
             }
-            SOQL.fields.add(node.label);
+            SOQL.fields.add(node.description);
         }
         if(SOQL.objectName) {
             fs.writeFileSync(filePath, SOQL.buildQuery(SOQL.objectName, SOQL.fields), 'utf8');

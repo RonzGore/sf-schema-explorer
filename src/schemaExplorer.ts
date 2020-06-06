@@ -23,6 +23,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	}
 
 	refreshNodeAndChildren(node: SFTreeItem): void {
+		node.description = node.description;
 		this._onDidChangeTreeData.fire(node);
 	}
 
@@ -33,7 +34,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	getChildren(element?: SFTreeItem): Thenable<SFTreeItem[]> {
 		if (element) {
 			if(element.contextValue === this.OBJECT_CONTEXT) {
-				return Promise.resolve(this.getFields(element.connection, element.label));
+				return Promise.resolve(this.getFields(element.connection, element.description));
 			} else if(element.contextValue === this.CONNECTION_CONTEXT) {
 				return Promise.resolve(this.getSObjects(element.username));
 			}  else {
@@ -71,6 +72,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 				connection.username = sortedOrgs[count].username;
 				connection.accessToken = sortedOrgs[count].accessToken;
 				connection.setContext(this.CONNECTION_CONTEXT);
+				connection.moreInfo = sortedOrgs[count];
 				connections.push(connection);
 			}
 			return connections;
@@ -78,9 +80,9 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			let message = error.message;
             console.log(message);
             if(message.includes('Command failed: SFDX_JSON_TO_STDOUT=true sfdx force:org:list')) {
-				message = 'Something is not right, please make sure you have at least one authenticated org.'
+				message = 'Something is not right, please make sure you have at least one authenticated org.';
 				if(message.includes('command not found')) {
-					message = 'It seems SFDX CLI is not found. Please install it from https://developer.salesforce.com/tools/sfdxcli.'
+					message = 'It seems SFDX CLI is not found. Please install it from https://developer.salesforce.com/tools/sfdxcli.';
 					vscode.window.showErrorMessage(message, {modal: true});
 					return connections;
 				}
@@ -96,15 +98,16 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 		const conn = await Config.getConnection(username);
 		console.log('connection accessToken', conn.accessToken);
 		const metadata = await Config.getObjects(conn);
-		const sortedMetadata = sortBy(metadata, 'fullName');
+		const sortedMetadata = metadata;// sortBy(metadata, 'fullName');
 		const sObjects: SFTreeItem[] = [];
-		for(let count=0; count < sortedMetadata.length; count++ ) {
-			const sObject = new SFTreeItem(sortedMetadata[count].fullName, sortedMetadata[count].fullName, 
+		for(let count=0; count < metadata.length; count++ ) {
+			const sObject = new SFTreeItem(metadata[count].label, metadata[count].name, 
 				vscode.TreeItemCollapsibleState.Collapsed);
 			sObject.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark','objects.svg'), 
 			path.join(__filename, '..', '..', 'resources', 'dark','objects.svg'));
 			sObject.setContext(this.OBJECT_CONTEXT);
 			sObject.connection = conn;
+			sObject.moreInfo = metadata[count];
 			sObjects.push(sObject);
 		}
 		return sObjects;
@@ -112,17 +115,20 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 	private async getFields(conn: sfcore.Connection, sObjectName: string) : Promise<SFTreeItem[]> {
 		const metadata = await Config.fetchFields(conn, sObjectName);
-		const sortedMetadata = sortBy(metadata, 'fullName');
 		const sObjectFields: SFTreeItem[] = [];
-		for(let count=0; count < sortedMetadata.length; count++ ) {
-		const metadata = await Config.fetchFields(conn, sObjectName);
-			const sObjectField = new SFTreeItem(sortedMetadata[count].fullName.replace(`${sObjectName}.`, ''), 
-				sortedMetadata[count].fullName, vscode.TreeItemCollapsibleState.None);
+		for(let count=0; count < metadata.length; count++ ) {
+			let fieldAPIName = metadata[count].name;
+			if(metadata[count].relationshipName !== null) {
+				fieldAPIName = `${metadata[count].relationshipName}.${fieldAPIName}`;
+			}
+			const sObjectField = new SFTreeItem(metadata[count].label, 
+				fieldAPIName, vscode.TreeItemCollapsibleState.None);
 			sObjectField.setCommand({
 					command: 'extension.insertField',
 					title: '',
 					arguments: [sObjectField]});
 			sObjectField.parentNode = sObjectName;
+			sObjectField.moreInfo = metadata[count];
 			sObjectField.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark', 'fields.svg'), 
 			path.join(__filename, '..', '..', 'resources', 'dark', 'fields.svg'));
 			sObjectField.setContext(this.FIELD_CONTEXT);
@@ -142,6 +148,7 @@ export class SFTreeItem extends vscode.TreeItem {
 	public accessToken: string = '';
 	connection: any;
 	public parentNode: string = '';
+	public moreInfo: object = {};
 
 	constructor(
 		public readonly label: string,

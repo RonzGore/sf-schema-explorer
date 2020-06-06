@@ -60,27 +60,11 @@
 				}
 			},
 			{
-				"command": "schemaExplorer.describeConnection",
+				"command": "schemaExplorer.moreInfo",
 				"title": "Show More Info",
 				"icon": {
-					"light": "resources/dark/describe.svg",
-					"dark": "resources/dark/describe.svg"
-				}
-			},
-			{
-				"command": "schemaExplorer.describeObject",
-				"title": "Show More Info",
-				"icon": {
-					"light": "resources/dark/describe.svg",
-					"dark": "resources/dark/describe.svg"
-				}
-			},
-			{
-				"command": "schemaExplorer.describeField",
-				"title": "Show More Info",
-				"icon": {
-					"light": "resources/dark/describe.svg",
-					"dark": "resources/dark/describe.svg"
+					"light": "resources/dark/info.svg",
+					"dark": "resources/dark/info.svg"
 				}
 			},
 			{
@@ -117,18 +101,18 @@
 					"group": "inline"
 				},
 				{
-					"command": "schemaExplorer.describeConnection",
-					"when": "view == schemaExplorer && viewItem == connection && 1==2",
+					"command": "schemaExplorer.moreInfo",
+					"when": "view == schemaExplorer && viewItem == connection",
 					"group": "inline"
 				},
 				{
-					"command": "schemaExplorer.describeObject",
-					"when": "view == schemaExplorer && viewItem == object && 1==2",
+					"command": "schemaExplorer.moreInfo",
+					"when": "view == schemaExplorer && viewItem == object",
 					"group": "inline"
 				},
 				{
-					"command": "schemaExplorer.describeField",
-					"when": "view == schemaExplorer && viewItem == field && 1==2",
+					"command": "schemaExplorer.moreInfo",
+					"when": "view == schemaExplorer && viewItem == field",
 					"group": "inline"
 				}
 			]
