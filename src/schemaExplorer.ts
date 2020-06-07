@@ -4,6 +4,8 @@ import * as sfcore from '@salesforce/core';
 import { sortBy } from 'lodash';
 
 import { Config } from './config';
+import { SOQL } from './soql';
+import { Info } from './moreInfo';
 
 export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
@@ -23,8 +25,14 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	}
 
 	refreshNodeAndChildren(node: SFTreeItem): void {
+		console.log('refreshNodeAndChildren');
 		node.description = node.description;
 		this._onDidChangeTreeData.fire(node);
+	}
+
+	showMoreInfo(node: SFTreeItem): void {
+		this._onDidChangeTreeData.fire(node);
+		Info.showMoreInfo(node);
 	}
 
 	getTreeItem(element: SFTreeItem): SFTreeItem {
@@ -34,9 +42,9 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	getChildren(element?: SFTreeItem): Thenable<SFTreeItem[]> {
 		if (element) {
 			if(element.contextValue === this.OBJECT_CONTEXT) {
-				return Promise.resolve(this.getFields(element.connection, element.description));
+				return Promise.resolve(this.getFields(element));
 			} else if(element.contextValue === this.CONNECTION_CONTEXT) {
-				return Promise.resolve(this.getSObjects(element.username));
+				return Promise.resolve(this.getSObjects(element));
 			}  else {
 				return Promise.resolve([]);
 			}
@@ -46,16 +54,18 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 	}
 
+	
+
 	private async getConnections(): Promise<SFTreeItem[]> {
 		const connections: any[] | PromiseLike<any[]> = [];
 		try { 
 			const orgs: any[] = await Config.getOrgsInfo();
 			const sortedOrgs = sortBy(orgs, 'alias');
 			for(let count = 0; count< sortedOrgs.length; count++) {
-				const  description = sortedOrgs[count].connectedStatus === 'Connected'?
-					`${sortedOrgs[count].username}-Connected`: `${sortedOrgs[count].username}-Disconnected`;
+				const  connectionStatus = sortedOrgs[count].connectedStatus === 'Connected'?
+					`Connected`: `Disconnected`;
 				
-				const connection = new SFTreeItem(sortedOrgs[count].alias, description, vscode.TreeItemCollapsibleState.Collapsed);
+				const connection = new SFTreeItem(sortedOrgs[count].alias, sortedOrgs[count].username, vscode.TreeItemCollapsibleState.Collapsed);
 				if(sortedOrgs[count].connectedStatus !== 'Connected' && 
 					sortedOrgs[count].connectedStatus !== 'Unknown') {
 					connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
@@ -70,6 +80,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 				}
 
 				connection.username = sortedOrgs[count].username;
+				connection.connectionStatus = connectionStatus;
 				connection.accessToken = sortedOrgs[count].accessToken;
 				connection.setContext(this.CONNECTION_CONTEXT);
 				connection.moreInfo = sortedOrgs[count];
@@ -94,12 +105,17 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
         }
 	}
 
-	private async getSObjects(username: string) : Promise<SFTreeItem[]> {
+	private async getSObjects(element: SFTreeItem) : Promise<SFTreeItem[]> {
+		const username = element.username;
 		const conn = await Config.getConnection(username);
 		console.log('connection accessToken', conn.accessToken);
 		const metadata = await Config.getObjects(conn);
 		const sortedMetadata = metadata;// sortBy(metadata, 'fullName');
 		const sObjects: SFTreeItem[] = [];
+		element.numberOfChildren = metadata.length || 0;
+		if(element.numberOfChildren > 0) {
+			element.description = `${element.description} | SObjects:${element.numberOfChildren}`;
+		}
 		for(let count=0; count < metadata.length; count++ ) {
 			const sObject = new SFTreeItem(metadata[count].label, metadata[count].name, 
 				vscode.TreeItemCollapsibleState.Collapsed);
@@ -108,14 +124,21 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			sObject.setContext(this.OBJECT_CONTEXT);
 			sObject.connection = conn;
 			sObject.moreInfo = metadata[count];
+			sObject.name = metadata[count].name;
 			sObjects.push(sObject);
 		}
 		return sObjects;
 	}
 
-	private async getFields(conn: sfcore.Connection, sObjectName: string) : Promise<SFTreeItem[]> {
+	private async getFields(element: SFTreeItem) : Promise<SFTreeItem[]> {
+		const conn = element.connection;
+		const sObjectName = element.name;
 		const metadata = await Config.fetchFields(conn, sObjectName);
 		const sObjectFields: SFTreeItem[] = [];
+		element.numberOfChildren = metadata.length || 0;
+		if(element.numberOfChildren > 0) {
+			element.description = `${element.description} | Fields:${element.numberOfChildren}`;
+		}
 		for(let count=0; count < metadata.length; count++ ) {
 			let fieldAPIName = metadata[count].name;
 			if(metadata[count].relationshipName !== null) {
@@ -140,7 +163,52 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	public checkConnection(node: SFTreeItem) {
 		node.setDescription(`${node.description}-Inactive`);
 	}
-}
+
+	activateTreeViewEventHandlers = (treeView: vscode.TreeView<vscode.TreeItem>): void => {
+		
+	// 	treeView.onDidExpandElement(
+	// 	  (event: any): Promise<any> => {
+	// 		console.log('Tree item was expanded:', event.element.label);
+	// 		console.log('Tree item was expanded:', event.element.context);
+	// 		return new Promise((resolve, reject) => {
+	// 		    if(event.element.contextValue === this.CONNECTION_CONTEXT) {
+	// 				this.getSObjects(event.element).then(
+	// 					() => {
+						
+	// 					this._onDidChangeTreeData.fire(event.element);;
+			
+	// 					resolve(true);
+	// 					},
+	// 					(err: Error) => {
+	// 						reject(err);
+	// 					});
+	// 		    } else if(event.element.contextValue === this.OBJECT_CONTEXT) {
+	// 				this.getFields(event.element).then(
+	// 					() => {
+						
+			
+	// 					this._onDidChangeTreeData.fire(event.element);;
+			
+	// 					resolve(true);
+	// 					},
+	// 					(err: Error) => {
+	// 						reject(err);
+	// 					});
+	// 		   }
+	// 		});
+	// 	});
+
+		treeView.onDidChangeSelection((event: any) => {
+			console.log(event.selection.length);
+			const CONFIG = vscode.workspace.getConfiguration('Explorer');
+			if(CONFIG.get('Multiselect')) {
+				SOQL.prepareSOQLForMultiSelect(event.selection);
+			}
+			// Else do nothing
+		});
+	};
+	
+};
 
 export class SFTreeItem extends vscode.TreeItem {
 	
@@ -149,6 +217,9 @@ export class SFTreeItem extends vscode.TreeItem {
 	connection: any;
 	public parentNode: string = '';
 	public moreInfo: object = {};
+	public numberOfChildren: number = 0;
+	public connectionStatus: string = '';
+	public name: string = '';
 
 	constructor(
 		public readonly label: string,
@@ -160,7 +231,8 @@ export class SFTreeItem extends vscode.TreeItem {
 	}
 
 	get tooltip(): string {
-		return `${this.label}-${this.description}`;
+		const status = this.connectionStatus === ''?'':`| Status:${this.connectionStatus}`;
+		return `${this.label} | ${this.description} ${status}`;
 	}
 
 	iconPath = {
@@ -183,5 +255,26 @@ export class SFTreeItem extends vscode.TreeItem {
 
 	public setDescription(description: string) {
 		this.description = description;
+	}
+}
+
+export class SFSchemaExplorer {
+	private sfSchemaViewer: vscode.TreeView<SFTreeItem>;
+	private treeDataProvider: SFSchemaProvider;
+
+	constructor(context: vscode.ExtensionContext) {
+		// Creating a tree view with the right data provider
+		this.treeDataProvider = new SFSchemaProvider();
+		this.sfSchemaViewer = vscode.window.createTreeView('schemaExplorer', { treeDataProvider: this.treeDataProvider,
+		canSelectMany: true });
+		this.treeDataProvider.activateTreeViewEventHandlers(this.sfSchemaViewer);
+		
+		// Registering commands
+		vscode.commands.registerCommand('schemaExplorer.refreshEntry', () => this.treeDataProvider.refresh());
+		vscode.commands.registerCommand('schemaExplorer.refreshNodeAndChildren', (node: SFTreeItem) => this.treeDataProvider.refreshNodeAndChildren(node));
+		// Todo: Implement in next version - describe field info and object info in a web-view within VSCode
+		vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => this.treeDataProvider.showMoreInfo(node));
+		vscode.commands.registerCommand('schemaExplorer.insertObject', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
+		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
 	}
 }

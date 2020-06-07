@@ -17,6 +17,16 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"configuration": {
+			"title": "SFSchemaExplorer",
+			"properties": {
+				"Explorer.Multiselect": {
+					"type": "boolean",
+					"default": true,
+					"description": "Toggle the multi-select mode for the explorer for building SOQL queries"
+				}
+			}
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{

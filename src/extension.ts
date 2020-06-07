@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-import { SFSchemaProvider, SFTreeItem } from './schemaExplorer'; 
+import { SFSchemaProvider, SFTreeItem, SFSchemaExplorer } from './schemaExplorer'; 
 import { SOQL } from './soql';
 import { Info } from './moreInfo';
 
@@ -15,15 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "schema-explorer" is now active!');
 	
-	const sFSchemaProvider = new SFSchemaProvider();
-	vscode.window.registerTreeDataProvider('schemaExplorer', sFSchemaProvider);
-	vscode.commands.registerCommand('schemaExplorer.refreshEntry', () => sFSchemaProvider.refresh());
-	vscode.commands.registerCommand('schemaExplorer.refreshNodeAndChildren', (node: SFTreeItem) => sFSchemaProvider.refreshNodeAndChildren(node));
-	// Todo: Implement in next version - ddescribe field info and object info in a web-view within VSCode
-	// vscode.commands.registerCommand('schemaExplorer.describeField',  (node: SFTreeItem) => SOQL.prepare(node));
-	vscode.commands.registerCommand('schemaExplorer.insertObject', (node: SFTreeItem) => SOQL.prepare(node));
-	vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => Info.showMoreInfo(node));
-	vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem) => SOQL.prepare(node));
+	new SFSchemaExplorer(context);
 }
 
 // this method is called when your extension is deactivated
