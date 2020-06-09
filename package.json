@@ -3,7 +3,7 @@
 	"displayName": "Salesforce Schema Explorer",
 	"description": "Salesforce Schema Explorer and Query Builder",
 	"icon": "media/logo-128.png",
-	"version": "0.1.6",
+	"version": "0.2.5-1",
 	"publisher": "RohanGore",
 	"repository": "https://github.com/RonzGore/sf-schema-explorer",
 	"engines": {
@@ -46,6 +46,14 @@
 		},
 		"commands": [
 			{
+				"command": "schemaExplorer.checkStatus",
+				"title": "Check Connection Status",
+				"icon": {
+					"light": "resources/dark/check.svg",
+					"dark": "resources/dark/check.svg"
+				}
+			},
+			{
 				"command": "schemaExplorer.refreshEntry",
 				"title": "Refresh",
 				"icon": {
@@ -59,14 +67,6 @@
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
-				}
-			},
-			{
-				"command": "schemaExplorer.checkConnection",
-				"title": "Check Connection Status",
-				"icon": {
-					"light": "resources/dark/edit.svg",
-					"dark": "resources/dark/edit.svg"
 				}
 			},
 			{
@@ -95,6 +95,11 @@
 				}
 			],
 			"view/item/context": [
+				{
+					"command": "schemaExplorer.checkStatus",
+					"when": "view == schemaExplorer && viewItem == connection",
+					"group": "inline"
+				},
 				{
 					"command": "schemaExplorer.refreshNodeAndChildren",
 					"when": "view == schemaExplorer && viewItem == connection",

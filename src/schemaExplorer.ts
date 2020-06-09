@@ -3,24 +3,29 @@ import * as path from 'path';
 import * as sfcore from '@salesforce/core';
 import { sortBy } from 'lodash';
 
-import { Config } from './config';
+import { SFMetadata } from './sfMetadata';
 import { SOQL } from './soql';
-import { Info } from './moreInfo';
+import { Info } from './info';
+import { DataAccess } from './localDataAccess';
 
 export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 	private _onDidChangeTreeData: vscode.EventEmitter<SFTreeItem | undefined> = new vscode.EventEmitter<SFTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<SFTreeItem | undefined> = this._onDidChangeTreeData.event;
-
+    private ignoreCache: boolean = true;
+	
 	readonly CONNECTION_CONTEXT: string = 'connection';
 	readonly OBJECT_CONTEXT: string = 'object';
 	readonly FIELD_CONTEXT: string = 'field';
+	
+	private dataAccess: DataAccess;
 
-
-	constructor() {
+	constructor(dataAccess: DataAccess) {
+		this.dataAccess = dataAccess;
 	}
 
 	refresh(): void {
+		this.ignoreCache = false;
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
@@ -57,10 +62,18 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	
 
 	private async getConnections(): Promise<SFTreeItem[]> {
-		const connections: any[] | PromiseLike<any[]> = [];
+		let connections: any[] | PromiseLike<any[]> = [];
+		let orgsInfo: any[];
 		try { 
-			const orgs: any[] = await Config.getOrgsInfo();
-			const sortedOrgs = sortBy(orgs, 'alias');
+			console.log(this.dataAccess.getData('connections'));
+			if(this.dataAccess.getData('connections') && this.ignoreCache) {
+				orgsInfo = [...this.dataAccess.getData('connections')];
+			} else {
+				//const orgs: any[] = await SFMetadata.getOrgsInfo();
+				orgsInfo = await SFMetadata.getOrgsInfo();
+				this.dataAccess.setData('connections', orgsInfo);
+			}
+			const sortedOrgs = sortBy(orgsInfo, 'alias');
 			for(let count = 0; count< sortedOrgs.length; count++) {
 				const  connectionStatus = sortedOrgs[count].connectedStatus === 'Connected'?
 					`Connected`: `Disconnected`;
@@ -86,6 +99,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 				connection.moreInfo = sortedOrgs[count];
 				connections.push(connection);
 			}
+			this.ignoreCache = true;
 			return connections;
 		} catch(error) {
 			let message = error.message;
@@ -107,9 +121,9 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 	private async getSObjects(element: SFTreeItem) : Promise<SFTreeItem[]> {
 		const username = element.username;
-		const conn = await Config.getConnection(username);
+		const conn = await SFMetadata.getConnection(username);
 		console.log('connection accessToken', conn.accessToken);
-		const metadata = await Config.getObjects(conn);
+		const metadata = await SFMetadata.getObjects(conn);
 		const sortedMetadata = metadata;// sortBy(metadata, 'fullName');
 		const sObjects: SFTreeItem[] = [];
 		element.numberOfChildren = metadata.length || 0;
@@ -133,7 +147,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	private async getFields(element: SFTreeItem) : Promise<SFTreeItem[]> {
 		const conn = element.connection;
 		const sObjectName = element.name;
-		const metadata = await Config.fetchFields(conn, sObjectName);
+		const metadata = await SFMetadata.fetchFields(conn, sObjectName);
 		const sObjectFields: SFTreeItem[] = [];
 		element.numberOfChildren = metadata.length || 0;
 		if(element.numberOfChildren > 0) {
@@ -160,8 +174,25 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 		return sObjectFields;
 	}
 
-	public checkConnection(node: SFTreeItem) {
-		node.setDescription(`${node.description}-Inactive`);
+	public async checkConnectionStatus(element: SFTreeItem) {
+		let message = 'This is a valid connection';
+		
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Checking Connection Status......",
+			cancellable: false
+		},async (progress: any, token: any) => {
+			console.log(progress, token);
+			try {
+				const conn = await SFMetadata.getConnection(element.username);
+				await SFMetadata.getObjects(conn); // This line is just to check connection validity
+				vscode.window.showInformationMessage(message, {modal: false});
+			} catch(error) {
+				message = 'This connection is no longer valid';
+				vscode.window.showErrorMessage(message, {modal: false});
+			}
+		});
+			
 	}
 
 	activateTreeViewEventHandlers = (treeView: vscode.TreeView<vscode.TreeItem>): void => {
@@ -207,6 +238,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			// Else do nothing
 		});
 	};
+
 	
 };
 
@@ -261,19 +293,25 @@ export class SFTreeItem extends vscode.TreeItem {
 export class SFSchemaExplorer {
 	private sfSchemaViewer: vscode.TreeView<SFTreeItem>;
 	private treeDataProvider: SFSchemaProvider;
+	private dataAccess: DataAccess;
 
 	constructor(context: vscode.ExtensionContext) {
 		// Creating a tree view with the right data provider
-		this.treeDataProvider = new SFSchemaProvider();
+		this.dataAccess = new DataAccess(context);
+		this.treeDataProvider = new SFSchemaProvider(this.dataAccess);
+		
 		this.sfSchemaViewer = vscode.window.createTreeView('schemaExplorer', { treeDataProvider: this.treeDataProvider,
 		canSelectMany: true });
 		this.treeDataProvider.activateTreeViewEventHandlers(this.sfSchemaViewer);
+
+		Info.context = context;
 		
 		// Registering commands
 		vscode.commands.registerCommand('schemaExplorer.refreshEntry', () => this.treeDataProvider.refresh());
 		vscode.commands.registerCommand('schemaExplorer.refreshNodeAndChildren', (node: SFTreeItem) => this.treeDataProvider.refreshNodeAndChildren(node));
 		// Todo: Implement in next version - describe field info and object info in a web-view within VSCode
 		vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => this.treeDataProvider.showMoreInfo(node));
+		vscode.commands.registerCommand('schemaExplorer.checkStatus', (node: SFTreeItem) => this.treeDataProvider.checkConnectionStatus(node));
 		vscode.commands.registerCommand('schemaExplorer.insertObject', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
 		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
 	}

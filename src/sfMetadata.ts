@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import * as util from 'util';
 import * as child_process from 'child_process';
 
-export class Config {
+export class SFMetadata {
 
     public static readonly promisifiedExec = util.promisify(child_process.exec);
     

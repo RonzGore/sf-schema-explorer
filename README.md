@@ -47,7 +47,7 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 4. **Create a simple SOQL by clicking on the fields of your choice.**
 
-*Note:* To use this feature user must be inside a VSCode Workspace/Project
+*Note:* ~~To use this feature user must be inside a VSCode Workspace/Project~~
 
 ![List all Orgs](./media/soql.png)
 
@@ -64,16 +64,30 @@ as this Software is open source. PRs are super welcome!
 
 # Roadmap (Not in any particular order) :rocket:
 
-1. Orgs Management(View more info,create,delete, clone and edit)
-2. Get Objects and fields metadata info (whether the field is updateable etc.)
+1. Orgs Management(View more info
+    1.a. View More info - Delivered
+    1.b. Create,delete, clone and edit
+2. Get Objects and fields metadata info (whether the field is updateable etc.) - Delivered
 3. Salesforce Deployable Package Creation and Management. Once this is out, the extension name made need to be changed as then it would no longer just be a Schema Explorer (This one is my favorite and my Admin friends will love it!) :hearts:
 4. Inline insertion of fields and queries in your code files
-5. Support for complex queries with relationships
+5. Support for complex queries with relationships - Delivered
 6. Your requested or contributed features! :+1:
 
 # Release Notes
 
-Initial Version 0.1.5 released
+### 0.2.0
+1. Performance improvements while fetching objects and fields
+2. Get More Info about objects and fields
+3. Support for relationship fields
+4. Support for multiselect while building SOQL queries
+5. Support for non customizable objects like ListViews, Apex Class etc.
+6. For Generating Queries, no more need to be in a Project or Workspace.
+
+### 0.1.5
+
+Initial Version released
+
+
 
 
 # 

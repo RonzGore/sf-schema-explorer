@@ -2,11 +2,13 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SFTreeItem } from './schemaExplorer';
+import { Info } from './info';
 
 
 export class SOQL {
     private static objectName: string;
     private static fields: any;
+    public static context: vscode.ExtensionContext;
     
     // TO Be used in a next version
     // private static insertText(getText: (i:number) => string, i: number = 0, wasEmpty: boolean = false): vscode.Position {
@@ -59,26 +61,14 @@ export class SOQL {
         // }
     }
 
-    private static display(displayString: string) {
-        let filePath: string = '';
-        const rootPath = vscode.workspace.rootPath || '';
-        filePath = path.join(rootPath, `query.txt`);
-        fs.existsSync(filePath);
-        fs.writeFileSync(filePath, displayString, 'utf8');
-        var openPath = vscode.Uri.file(filePath);
-        vscode.workspace.openTextDocument(openPath).then(doc => {
-            vscode.window.showTextDocument(doc);
-        });
-    }
-
     private static buildQuery(objectName: string, fields: any) : string {
         let query = 'SELECT\n';
         let count = 0;
         for (let field of fields) {
-            if(count === fields.size-1) {
+            if(count === 0) {
                 query += `      ${field}\n`;
             } else {
-                query += `      ${field},\n`;
+                query += `      ,${field}\n`;
             }
             count++;
         }
@@ -103,7 +93,9 @@ export class SOQL {
         }
         console.log('objectName: ', objectName);
         console.log('fields: ', fields);
-        SOQL.display(SOQL.buildQuery(objectName, fields));
+        if(objectName !== '') {
+            Info.display(SOQL.buildQuery(objectName, fields), 'query.txt');
+        }
     }
 
     
@@ -128,7 +120,7 @@ export class SOQL {
                 SOQL.fields.add(node.description);
             }
             if(SOQL.objectName) {
-                SOQL.display(SOQL.buildQuery(SOQL.objectName, SOQL.fields));
+                Info.display(SOQL.buildQuery(SOQL.objectName, SOQL.fields), 'query.txt');
             }
         }
     }
