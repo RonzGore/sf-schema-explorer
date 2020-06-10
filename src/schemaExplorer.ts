@@ -305,7 +305,8 @@ export class SFSchemaExplorer {
 		// Todo: Implement in next version - describe field info and object info in a web-view within VSCode
 		vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => this.treeDataProvider.showMoreInfo(node));
 		vscode.commands.registerCommand('schemaExplorer.checkStatus', (node: SFTreeItem) => this.treeDataProvider.checkConnectionStatus(node));
-		// to be added for opening connection
+		
+		vscode.commands.registerCommand('schemaExplorer.open', (node: SFTreeItem) => SFAPIOperations.openConnection(node.username));
 		vscode.commands.registerCommand('schemaExplorer.insertObject', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
 		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
 	}

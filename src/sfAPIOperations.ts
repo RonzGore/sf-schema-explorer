@@ -48,5 +48,17 @@ export class SFAPIOperations {
         return fieldsInfo;
     }
 
-    // open connection code
+    // function for opening connection based on username provided
+    public static async openConnection(userName: string) {
+        console.log(userName);
+        const { stdout } = await this.promisifiedExec('SFDX_JSON_TO_STDOUT=true sfdx force:org:open -u'+ userName +' --json');
+        const jsonOutput = JSON.parse(stdout);
+        if(jsonOutput.status === 0) {
+            console.log(jsonOutput);
+        } else {
+            let message = jsonOutput;
+            vscode.window.showErrorMessage(jsonOutput);
+        }
+    }
+
 }
