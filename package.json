@@ -22,7 +22,7 @@
 			"properties": {
 				"Explorer.Multiselect": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Toggle the multi-select mode for the explorer for building SOQL queries"
 				}
 			}
