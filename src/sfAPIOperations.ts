@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import * as util from 'util';
 import * as child_process from 'child_process';
 
-export class SFMetadata {
+export class SFAPIOperations {
 
     public static readonly promisifiedExec = util.promisify(child_process.exec);
     
@@ -36,10 +36,17 @@ export class SFMetadata {
         return metadata;
     }
 
+    public static async describeObject(conn : any, sObjectName: string) {
+        console.log(sObjectName);
+        const objectInfo = await conn.describe(sObjectName);
+        return objectInfo;
+    }
+
     public static async fetchFields(conn : any, sObjectName: string) {
         console.log(sObjectName);
         const fieldsInfo = await (await conn.describe(sObjectName)).fields;
-        console.log(fieldsInfo);
         return fieldsInfo;
     }
+
+    // open connection code
 }

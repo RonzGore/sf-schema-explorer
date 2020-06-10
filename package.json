@@ -84,6 +84,10 @@
 					"light": "resources/dark/insert.svg",
 					"dark": "resources/dark/insert.svg"
 				}
+			},
+			{
+				"command": "schemaExplorer.open",
+				"title": "Open Connection"
 			}
 		],
 		"menus": {
@@ -96,9 +100,12 @@
 			],
 			"view/item/context": [
 				{
+					"command": "schemaExplorer.open",
+					"when": "view == schemaExplorer && viewItem == connection"
+				},
+				{
 					"command": "schemaExplorer.checkStatus",
-					"when": "view == schemaExplorer && viewItem == connection",
-					"group": "inline"
+					"when": "view == schemaExplorer && viewItem == connection"
 				},
 				{
 					"command": "schemaExplorer.refreshNodeAndChildren",

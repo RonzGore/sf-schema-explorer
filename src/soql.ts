@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
+
 import { SFTreeItem } from './schemaExplorer';
 import { Info } from './info';
-
+import { Constants } from './constants';
 
 export class SOQL {
     private static objectName: string;
@@ -80,9 +79,9 @@ export class SOQL {
         let objectName: string = '';
         let fields = [];
         for(let count=0; count <nodes.length; count++) {
-            if(nodes[count].contextValue === 'object' && objectName === '') {
+            if(nodes[count].contextValue === Constants.OBJECT_CONTEXT && objectName === '') {
                 objectName = nodes[count].name;
-            } else if(nodes[count].contextValue === 'field') {
+            } else if(nodes[count].contextValue === Constants.FIELD_CONTEXT) {
                 if(objectName === '') {
                     objectName = nodes[count].parentNode;
                     fields.push(nodes[count].description);
@@ -107,12 +106,12 @@ export class SOQL {
         if(CONFIG.get('Multiselect')) {
             // Do nothing
         } else {
-            if(node.contextValue === 'object') {
+            if(node.contextValue === Constants.OBJECT_CONTEXT) {
                 if(SOQL.objectName !== node.label) {
                     SOQL.objectName = node.label;
                     SOQL.fields = new Set();
                 }
-            } else if(node.contextValue === 'field') {
+            } else if(node.contextValue === Constants.FIELD_CONTEXT) {
                 if(SOQL.objectName !== node.parentNode) {
                     SOQL.objectName = node.parentNode;
                     SOQL.fields = new Set();

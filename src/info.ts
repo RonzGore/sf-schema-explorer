@@ -1,15 +1,25 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SFTreeItem } from './schemaExplorer';
 
+import { SFAPIOperations } from './sfAPIOperations';
+import { SFTreeItem } from './schemaExplorer';
+import { Constants } from './constants';
 
 export class Info {
     
     public static context: vscode.ExtensionContext;
 
-    public static showMoreInfo(node: SFTreeItem) {
-        Info.display(JSON.stringify(node.moreInfo, null, 2), 'Info.json');
+    public static async showMoreInfo(node: SFTreeItem) {
+        let moreInfo = node.moreInfo;
+        if(node.contextValue === Constants.OBJECT_CONTEXT) {
+            const objectInfo = await SFAPIOperations.describeObject(node.connection, node.name);
+            delete objectInfo.fields;
+            moreInfo = objectInfo;
+        } 
+        Info.display(JSON.stringify(moreInfo, null, 2), 'Info.json');
+        
+        
     }
 
     public static display(displayString: string, fileName: string) {
