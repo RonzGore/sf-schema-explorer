@@ -47,11 +47,7 @@
 		"commands": [
 			{
 				"command": "schemaExplorer.checkStatus",
-				"title": "Check Connection Status",
-				"icon": {
-					"light": "resources/dark/check.svg",
-					"dark": "resources/dark/check.svg"
-				}
+				"title": "Check Connection Status"
 			},
 			{
 				"command": "schemaExplorer.refreshEntry",
@@ -73,15 +69,15 @@
 				"command": "schemaExplorer.moreInfo",
 				"title": "Show More Info",
 				"icon": {
-					"light": "resources/dark/info.svg",
+					"light": "resources/light/info.svg",
 					"dark": "resources/dark/info.svg"
 				}
 			},
 			{
-				"command": "schemaExplorer.insertObject",
-				"title": "Insert",
+				"command": "schemaExplorer.includeAllFields",
+				"title": "Include All Fields",
 				"icon": {
-					"light": "resources/dark/insert.svg",
+					"light": "resources/light/insert.svg",
 					"dark": "resources/dark/insert.svg"
 				}
 			},
@@ -118,8 +114,8 @@
 					"group": "inline"
 				},
 				{
-					"command": "schemaExplorer.insertObject",
-					"when": "view == schemaExplorer && viewItem == object",
+					"command": "schemaExplorer.includeAllFields",
+					"when": "view == schemaExplorer && viewItem == object &&  1 == 2" ,
 					"group": "inline"
 				},
 				{

@@ -75,13 +75,13 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 				if(sortedOrgs[count].connectedStatus !== 'Connected' && 
 					sortedOrgs[count].connectedStatus !== 'Unknown') {
 					connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
-					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'dark',
+					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'light',
 					'disconnected.svg'));
 				}
 				if(sortedOrgs[count].connectedStatus === 'Unknown' && 
 					sortedOrgs[count].status !== 'Active') {
 					connection.setIconPath(path.join(__filename, '..', '..', 'resources', 'dark',
-					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'dark',
+					'disconnected.svg'), path.join(__filename, '..', '..', 'resources', 'light',
 					'disconnected.svg'));
 				}
 
@@ -127,7 +127,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			const sObject = new SFTreeItem(metadata[count].label, metadata[count].name, 
 				vscode.TreeItemCollapsibleState.Collapsed);
 			sObject.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark','objects.svg'), 
-			path.join(__filename, '..', '..', 'resources', 'dark','objects.svg'));
+			path.join(__filename, '..', '..', 'resources', 'light','objects.svg'));
 			sObject.setContext(Constants.OBJECT_CONTEXT);
 			sObject.connection = conn;
 			sObject.moreInfo = metadata[count];
@@ -160,7 +160,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			sObjectField.parentNode = sObjectName;
 			sObjectField.moreInfo = metadata[count];
 			sObjectField.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark', 'fields.svg'), 
-			path.join(__filename, '..', '..', 'resources', 'dark', 'fields.svg'));
+			path.join(__filename, '..', '..', 'resources', 'light', 'fields.svg'));
 			sObjectField.setContext(Constants.FIELD_CONTEXT);
 			sObjectFields.push(sObjectField);
 		}
@@ -302,12 +302,12 @@ export class SFSchemaExplorer {
 		// Registering commands
 		vscode.commands.registerCommand('schemaExplorer.refreshEntry', () => this.treeDataProvider.refresh());
 		vscode.commands.registerCommand('schemaExplorer.refreshNodeAndChildren', (node: SFTreeItem) => this.treeDataProvider.refreshNodeAndChildren(node));
-		// Todo: Implement in next version - describe field info and object info in a web-view within VSCode
+		// Todo: Good to have based on feedback: describe field info and object info in a web-view within VSCode
 		vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => this.treeDataProvider.showMoreInfo(node));
 		vscode.commands.registerCommand('schemaExplorer.checkStatus', (node: SFTreeItem) => this.treeDataProvider.checkConnectionStatus(node));
 		
 		vscode.commands.registerCommand('schemaExplorer.open', (node: SFTreeItem) => SFAPIOperations.openConnection(node.username));
-		vscode.commands.registerCommand('schemaExplorer.insertObject', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
+		// Todo: vscode.commands.registerCommand('schemaExplorer.includeAllFields', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepareQueryWithAllFields(node, nodes));
 		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
 	}
 }

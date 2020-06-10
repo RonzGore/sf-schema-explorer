@@ -29,7 +29,7 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 1. Install SFDX CLI from [here](https://developer.salesforce.com/tools/sfdxcli) based on your operating system.
 2. Requires VSCode version 1.40 and beyond. May work in older versions. Have not tested though! 
 
-# Features
+# Features (No more switching back and forth to workbench or any other similar tools for Schema Exploration while you are busy writing awesome software in your IDE**)
 
 ![Schema Explorer](./media/sf-schema-explorer.gif)
 
@@ -37,19 +37,22 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 ![List all Orgs](./media/connections.png)
 
-2. **Shows Salesforce Objects from selected org.**
+2. **Get more information about the connection/org and open the org**
 
-![List all Orgs](./media/sobjects.png)
+![Info of Orgs and Open the Org](./media/org-info-open.gif)
 
-3. **Shows all the Fields from the selected Object.**
 
-![List all Orgs](./media/fields.png)
+3. **Shows Salesforce Objects from selected org and get more info like whether the object is triggerable, searchable, child relationships etc.(Including non customizable objects like ListViews, ApexClasses etc.)**
 
-4. **Create a simple SOQL by clicking on the fields of your choice.**
+![List all Objects](./media/list-objects.gif)
 
-*Note:* ~~To use this feature user must be inside a VSCode Workspace/Project~~
+4. **Shows all the Fields and master relationship fields from the selected Object and get more info like whether the fields is aggregatable, updateable etc.**
 
-![List all Orgs](./media/soql.png)
+![List all fields](./media/list-fields.gif)
+
+5. **Create SOQLs with parent relationships by clicking on the fields/relationships of your choice. You can either select in multiselect mode or single select mode**
+
+![Create SOQLs](./media/soql.gif)
 
 # Issue Reporting/Feature Requests
 
