@@ -59,8 +59,6 @@ export class SFAPIOperations {
 			console.log(progress, token);
 			try {
 				const { stdout } = await this.promisifiedExec('SFDX_JSON_TO_STDOUT=true sfdx force:org:open -u '+ userName +' --json');
-                const jsonOutput = JSON.parse(stdout);
-                console.log(jsonOutput);
 			} catch(error) {
 				vscode.window.showErrorMessage(error.message, {modal: false});
 			}

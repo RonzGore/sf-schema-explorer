@@ -23,13 +23,12 @@ It is highly recommended to use with Salesforce Extension Pack to get all the ot
 
 # Requirements
 
-
 This VSCode extension works only once you have installed Salesforce CLI on your computer.
 
 1. Install SFDX CLI from [here](https://developer.salesforce.com/tools/sfdxcli) based on your operating system.
 2. Requires VSCode version 1.40 and beyond. May work in older versions. Have not tested though! 
 
-# Features (No more switching back and forth to workbench or any other similar tools for Schema Exploration while you are busy writing awesome software in your IDE**)
+# Features (No more switching back and forth to workbench or any other similar tools for Schema Exploration while you are busy writing awesome software in your IDE)
 
 ![Schema Explorer](./media/sf-schema-explorer.gif)
 
@@ -40,7 +39,6 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 2. **Get more information about the connection/org and open the org**
 
 ![Info of Orgs and Open the Org](./media/org-info-open.gif)
-
 
 3. **Shows Salesforce Objects from selected org and get more info like whether the object is triggerable, searchable, child relationships etc.(Including non customizable objects like ListViews, ApexClasses etc.)**
 
