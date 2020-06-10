@@ -28,27 +28,28 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 1. Install SFDX CLI from [here](https://developer.salesforce.com/tools/sfdxcli) based on your operating system.
 2. Requires VSCode version 1.40 and beyond. May work in older versions. Have not tested though! 
 
-# Features (No more switching back and forth to workbench or any other similar tools for Schema Exploration while you are busy writing awesome software in your IDE)
+# Features 
+## (No more switching back and forth to workbench or any other similar tools for Schema Exploration while you are busy writing awesome software in your IDE) 
 
 ![Schema Explorer](./media/sf-schema-explorer.gif)
 
-1. **Get a list of all the orgs which has been authenticated using SFDX CLI**
+1. **Get a list of all the orgs which have been authenticated using SFDX CLI**
 
 ![List all Orgs](./media/connections.png)
 
-2. **Get more information about the connection/org and open the org**
+2. **Get more information about the orgs(we can also call them connections) and open them in browser**
 
 ![Info of Orgs and Open the Org](./media/org-info-open.gif)
 
-3. **Shows Salesforce Objects from selected org and get more info like whether the object is triggerable, searchable, child relationships etc.(Including non customizable objects like ListViews, ApexClasses etc.)**
+3. **Get a list of Salesforce Objects(Including non customizable objects like ListViews, ApexClasses etc.) from the selected org and get a lot more info for any of these objects at the click of a button; whether the object is triggerable, searchable, child relationships etc.**
 
 ![List all Objects](./media/list-objects.gif)
 
-4. **Shows all the Fields and master relationship fields from the selected Object and get more info like whether the fields is aggregatable, updateable etc.**
+4. **Get a list of all the Fields and parent relationship fields from the selected Object and get more info for any of these objects at the click of a button; whether the field is aggregatable, updateable etc.**
 
 ![List all fields](./media/list-fields.gif)
 
-5. **Create SOQLs with parent relationships by clicking on the fields/relationships of your choice. You can either select in multiselect mode or single select mode**
+5. **Create SOQLs (parent relationships are also supported) by clicking on the fields/relationships of your choice. You can either work in single-select(Default) or multiselect mode**
 
 ![Create SOQLs](./media/soql.gif)
 
