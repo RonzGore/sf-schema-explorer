@@ -117,14 +117,16 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 		const conn = await SFAPIOperations.getConnection(username);
 		console.log('connection accessToken', conn.accessToken);
 		const metadata = await SFAPIOperations.getObjects(conn);
-		const sortedMetadata = metadata;// sortBy(metadata, 'fullName');
 		const sObjects: SFTreeItem[] = [];
+		const currentDepth = element.depth;
+		
 		element.numberOfChildren = metadata.length || 0;
 		if(element.numberOfChildren > 0) {
 			element.description = `${element.description} | SObjects:${element.numberOfChildren}`;
 		}
 		for(let count=0; count < metadata.length; count++ ) {
-			const sObject = new SFTreeItem(metadata[count].label, metadata[count].name, 
+			const description =  `${metadata[count].name} | Level: ${currentDepth}`;
+			const sObject = new SFTreeItem(metadata[count].label, description, 
 				vscode.TreeItemCollapsibleState.Collapsed);
 			sObject.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark','objects.svg'), 
 			path.join(__filename, '..', '..', 'resources', 'light','objects.svg'));
@@ -147,22 +149,59 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			element.description = `${element.description} | Fields:${element.numberOfChildren}`;
 		}
 		for(let count=0; count < metadata.length; count++ ) {
-			let fieldAPIName = metadata[count].name;
-			if(metadata[count].relationshipName !== null) {
-				fieldAPIName = `${metadata[count].relationshipName}.${fieldAPIName}`;
+			let description = metadata[count].name;
+			const currentDepth = element.depth+1;
+			if(metadata[count].relationshipName !== null && element.depth < 4) {
+				description = `${metadata[count].relationshipName}.${description}| Level: ${currentDepth}`;
+				const sObject = new SFTreeItem(metadata[count].label, description, 
+					vscode.TreeItemCollapsibleState.Collapsed);
+				const objectSVGName = `objects${currentDepth}.svg`;
+				sObject.setIconPath( path.join(__filename, '..', '..', 'resources', 'light', objectSVGName), 
+				path.join(__filename, '..', '..', 'resources', 'dark', objectSVGName));
+				sObject.setContext(Constants.OBJECT_CONTEXT);
+				sObject.connection = conn;
+				sObject.moreInfo = metadata[count];
+				sObject.name = metadata[count].referenceTo[0];
+				if(element.parentNode === '') {
+					sObject.parentNode = sObjectName;
+				} else {
+					sObject.parentNode = element.parentNode;
+				
+				}
+				if(element.relationshipName === '') {
+					sObject.relationshipName = metadata[count].relationshipName;
+				} else {
+					sObject.relationshipName = `${element.relationshipName}.${metadata[count].relationshipName}`;
+				}
+				sObject.depth = currentDepth;
+				sObjectFields.push(sObject);
+			} else {
+				const sObjectField = new SFTreeItem(metadata[count].label, 
+					`${description} | Level: ${currentDepth}`, vscode.TreeItemCollapsibleState.None);
+				sObjectField.setCommand({
+						command: 'extension.insertField',
+						title: '',
+						arguments: [sObjectField]});
+				if(element.parentNode === '') {
+					sObjectField.parentNode = sObjectName;
+				} else {
+					sObjectField.parentNode = element.parentNode;
+				
+				}
+				sObjectField.moreInfo = metadata[count];
+				const fieldsSVGName = `fields${currentDepth}.svg`;
+				sObjectField.setIconPath(path.join(__filename, '..', '..', 'resources', 'light', fieldsSVGName), 
+				path.join(__filename, '..', '..', 'resources', 'dark', fieldsSVGName));
+				sObjectField.setContext(Constants.FIELD_CONTEXT);
+				if(element.relationshipName === '') {
+					sObjectField.name = metadata[count].name;
+				} else {
+					sObjectField.name = `${element.relationshipName}.${metadata[count].name}`;
+				}
+				sObjectField.depth = element.depth+1;
+				sObjectFields.push(sObjectField);
 			}
-			const sObjectField = new SFTreeItem(metadata[count].label, 
-				fieldAPIName, vscode.TreeItemCollapsibleState.None);
-			sObjectField.setCommand({
-					command: 'extension.insertField',
-					title: '',
-					arguments: [sObjectField]});
-			sObjectField.parentNode = sObjectName;
-			sObjectField.moreInfo = metadata[count];
-			sObjectField.setIconPath( path.join(__filename, '..', '..', 'resources', 'dark', 'fields.svg'), 
-			path.join(__filename, '..', '..', 'resources', 'light', 'fields.svg'));
-			sObjectField.setContext(Constants.FIELD_CONTEXT);
-			sObjectFields.push(sObjectField);
+			
 		}
 		return sObjectFields;
 	}
@@ -237,14 +276,17 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
 export class SFTreeItem extends vscode.TreeItem {
 	
+	connection: any;
+
 	public username: string = '';
 	public accessToken: string = '';
-	connection: any;
 	public parentNode: string = '';
 	public moreInfo: object = {};
 	public numberOfChildren: number = 0;
 	public connectionStatus: string = '';
 	public name: string = '';
+	public relationshipName: string = '';
+	public depth: number = 0;
 
 	constructor(
 		public readonly label: string,

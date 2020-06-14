@@ -84,9 +84,9 @@ export class SOQL {
             } else if(nodes[count].contextValue === Constants.FIELD_CONTEXT) {
                 if(objectName === '') {
                     objectName = nodes[count].parentNode;
-                    fields.push(nodes[count].description);
+                    fields.push(nodes[count].name);
                 } else if(nodes[count].parentNode === objectName) { // Consider only fields from one selected object at a time
-                    fields.push(nodes[count].description);
+                    fields.push(nodes[count].name);
                 }
             }
         }
@@ -106,7 +106,7 @@ export class SOQL {
         if(CONFIG.get('Multiselect')) {
             // Do nothing
         } else {
-            if(node.contextValue === Constants.OBJECT_CONTEXT) {
+            if(node.contextValue === Constants.OBJECT_CONTEXT ) {
                 if(SOQL.objectName !== node.label) {
                     SOQL.objectName = node.label;
                     SOQL.fields = new Set();
@@ -116,7 +116,7 @@ export class SOQL {
                     SOQL.objectName = node.parentNode;
                     SOQL.fields = new Set();
                 }
-                SOQL.fields.add(node.description);
+                SOQL.fields.add(node.name);
             }
             if(SOQL.objectName) {
                 Info.display(SOQL.buildQuery(SOQL.objectName, SOQL.fields), 'query.txt');

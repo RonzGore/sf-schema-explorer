@@ -77,7 +77,7 @@ as this Software is open source. PRs are super welcome!
 
 # Release Notes
 
-### 0.2.0
+### 0.2.6
 1. Performance improvements while fetching objects and fields
 2. Get More Info about objects and fields
 3. Support for relationship fields
