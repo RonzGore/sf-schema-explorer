@@ -70,7 +70,7 @@ as this Software is open source. PRs are super welcome!
     1.a. View More info - Delivered
     1.b. Create,delete, clone and edit
 2. Get Objects and fields metadata info (whether the field is updateable etc.) - Delivered
-3. Salesforce Deployable Package Creation and Management. Once this is out, the extension name may need to be changed as then it would no longer just be a Schema Explorer (This one is my favorite and my Admin friends will love it!) :hearts:
+3. Salesforce Deployable Package Creation and Management. Once this is out, the extension name may need to be changed as it would no longer just be a Schema Explorer then (This one is my favorite and my Admin friends will love it!) :hearts:
 4. Inline insertion of fields and queries in your code files
 5. Support for complex queries with relationships - Delivered
 6. Your requested or contributed features! :+1:
