@@ -7,6 +7,7 @@ import { SOQL } from './soql';
 import { Info } from './info';
 import { DataAccess } from './localDataAccess';
 import { Constants } from './constants';
+import { MetaInfo } from './views/metaInfo';
 
 export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
@@ -31,9 +32,9 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	showMoreInfo(node: SFTreeItem): void {
+	showMoreInfo(node: SFTreeItem, info: MetaInfo): void {
 		this._onDidChangeTreeData.fire(node);
-		Info.showMoreInfo(node);
+		info.showMoreInfoInWebView(node);
 	}
 
 	getTreeItem(element: SFTreeItem): SFTreeItem {
@@ -329,6 +330,7 @@ export class SFSchemaExplorer {
 	private sfSchemaViewer: vscode.TreeView<SFTreeItem>;
 	private treeDataProvider: SFSchemaProvider;
 	private dataAccess: DataAccess;
+	private metaInfo: MetaInfo;
 
 	constructor(context: vscode.ExtensionContext) {
 		// Creating a tree view with the right data provider
@@ -338,14 +340,14 @@ export class SFSchemaExplorer {
 		this.sfSchemaViewer = vscode.window.createTreeView('schemaExplorer', { treeDataProvider: this.treeDataProvider,
 		canSelectMany: true });
 		this.treeDataProvider.activateTreeViewEventHandlers(this.sfSchemaViewer);
-
+        this.metaInfo = new MetaInfo(context);
 		Info.context = context;
 		
 		// Registering commands
 		vscode.commands.registerCommand('schemaExplorer.refreshEntry', () => this.treeDataProvider.refresh());
 		vscode.commands.registerCommand('schemaExplorer.refreshNodeAndChildren', (node: SFTreeItem) => this.treeDataProvider.refreshNodeAndChildren(node));
 		// Todo: Good to have based on feedback: describe field info and object info in a web-view within VSCode
-		vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => this.treeDataProvider.showMoreInfo(node));
+		vscode.commands.registerCommand('schemaExplorer.moreInfo', (node: SFTreeItem) => this.treeDataProvider.showMoreInfo(node, this.metaInfo));
 		vscode.commands.registerCommand('schemaExplorer.checkStatus', (node: SFTreeItem) => this.treeDataProvider.checkConnectionStatus(node));
 		
 		vscode.commands.registerCommand('schemaExplorer.open', (node: SFTreeItem) => SFAPIOperations.openConnection(node.username));

@@ -15,7 +15,7 @@ export class MetaInfo {
     private getJPPickerJSResource() : vscode.Uri {
         // Local path to main script run in the webview
         const jpPickerJSPathOnDisk = vscode.Uri.file(
-            path.join(this.context.extensionPath, "src", "views", "lib", "jppicker.min.js")
+            path.join(this.context.extensionPath, "src", "views", "lib", "jsonpath-picker.min.js")
         );
         return jpPickerJSPathOnDisk.with({ scheme: "vscode-resource" });
     }
@@ -23,7 +23,7 @@ export class MetaInfo {
     private getJPPickerCSSResource() : vscode.Uri {
         // Local path to main script run in the webview
         const jpPickerCSSPathOnDisk = vscode.Uri.file(
-            path.join(this.context.extensionPath, "src", "views", "lib", "jppicker.min.css")
+            path.join(this.context.extensionPath, "src", "views", "lib", "jsonpath-picker.min.css")
         );
         return jpPickerCSSPathOnDisk.with({ scheme: "vscode-resource" });
     }
@@ -32,6 +32,7 @@ export class MetaInfo {
     private generateWebView(moreInfo: string) {
         const jpPickerJSUri = this.getJPPickerJSResource();
         const jpPickerCSSUri = this.getJPPickerCSSResource();
+        console.log('jpPickerJSUri: ',jpPickerJSUri);
         return `<!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -44,18 +45,19 @@ export class MetaInfo {
                 <body>
                     <pre id="json-renderer" class="json-tree"></pre>
                     <input style="display:none;" class="path" type="text">
-
-                    function script() {
-                        const $pathTarget = document.querySelectorAll('.path');
-                        const $source = document.querySelector('#json-renderer');
-                      
-                        const defaultOpts = {
-                            pathNotation: 'dots',
-                            pickerIcon: '#x7f7'
-                        };
-                        JPPicker.render($source, ${moreInfo}, $pathTarget, defaultOpts);
-                    }
-                    script();
+                    <script>
+                        function script() {
+                            const $pathTarget = document.querySelectorAll('.path');
+                            const $source = document.querySelector('#json-renderer');
+                        
+                            const defaultOpts = {
+                                pathNotation: 'dots',
+                                pickerIcon: '#x7f7'
+                            };
+                            JPPicker.render($source, ${moreInfo}, $pathTarget, defaultOpts);
+                        }
+                        script();
+                    </script>
                 </body>
                 </html>`;
     }

@@ -93,7 +93,7 @@ export class SOQL {
         console.log('objectName: ', objectName);
         console.log('fields: ', fields);
         if(objectName !== '') {
-            Info.display(SOQL.buildQuery(objectName, fields), 'query.txt');
+            //Info.display(SOQL.buildQuery(objectName, fields), 'query.txt');
         }
     }
 
@@ -119,7 +119,7 @@ export class SOQL {
                 SOQL.fields.add(node.name);
             }
             if(SOQL.objectName) {
-                Info.display(SOQL.buildQuery(SOQL.objectName, SOQL.fields), 'query.txt');
+                //Info.display(SOQL.buildQuery(SOQL.objectName, SOQL.fields), 'query.txt');
             }
         }
     }
