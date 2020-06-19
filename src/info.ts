@@ -10,19 +10,17 @@ export class Info {
     
     public static context: vscode.ExtensionContext;
 
-    public static async showMoreInfo(node: SFTreeItem) {
+    private async getMoreInfo(node: SFTreeItem) {
         let moreInfo = node.moreInfo;
         if(node.contextValue === Constants.OBJECT_CONTEXT) {
             const objectInfo = await SFAPIOperations.describeObject(node.connection, node.name);
             delete objectInfo.fields;
             moreInfo = objectInfo;
-        } 
-        Info.display(JSON.stringify(moreInfo, null, 2), 'Info.json');
-        
-        
+        }
+        return moreInfo;
     }
 
-    public static display(displayString: string, fileName: string) {
+    private static display(displayString: string, fileName: string) {
         let filePath: string = '';
         const rootPath = vscode.workspace.rootPath || Info.context.extensionPath;
         filePath = path.join(rootPath, fileName);
@@ -33,5 +31,10 @@ export class Info {
         vscode.workspace.openTextDocument(openPath).then(doc => {
             vscode.window.showTextDocument(doc);
         });
+    }
+
+    public async showMoreInfo(node: SFTreeItem) {
+        const moreInfo = await this.getMoreInfo(node);
+        Info.display(JSON.stringify(moreInfo, null, 2), 'Info.json');
     }
 }
