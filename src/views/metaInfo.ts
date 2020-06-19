@@ -7,6 +7,7 @@ import { Constants } from '../constants';
 
 export class MetaInfo {
     private context: vscode.ExtensionContext;
+    private currentPanel: vscode.WebviewPanel | any = undefined;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -63,16 +64,16 @@ export class MetaInfo {
     }
 
     private displayMetaDataInfo(moreInfo: string) {
-        let currentPanel: vscode.WebviewPanel | any = '';
         const columnToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
         : undefined;
-        if (currentPanel) {
+        if (this.currentPanel) {
             // If we already have a panel, show it in the target column
-            currentPanel.reveal(columnToShowIn);
+            this.currentPanel.webview.html = this.generateWebView(moreInfo);
+            this.currentPanel.reveal(columnToShowIn);
         } else {
             // Otherwise, create a new panel
-            currentPanel = vscode.window.createWebviewPanel(
+            this.currentPanel = vscode.window.createWebviewPanel(
                 'INFO',
                 'More Info',
                 vscode.ViewColumn.One,
@@ -80,12 +81,12 @@ export class MetaInfo {
                     enableScripts: true
                 }
             );
-            currentPanel.webview.html = this.generateWebView(moreInfo);
+            this.currentPanel.webview.html = this.generateWebView(moreInfo);
 
             // Reset when the current panel is closed
-            currentPanel.onDidDispose(
+            this.currentPanel.onDidDispose(
                 () => {
-                    currentPanel = undefined;
+                    this.currentPanel = undefined;
                 },
                 null
             );
@@ -98,7 +99,7 @@ export class MetaInfo {
             const objectInfo = await SFAPIOperations.describeObject(node.connection, node.name);
             delete objectInfo.fields;
             moreInfo = objectInfo;
-        } 
+        }
         this.displayMetaDataInfo(JSON.stringify(moreInfo));
     }
 }
