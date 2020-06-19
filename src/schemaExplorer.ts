@@ -14,11 +14,12 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<SFTreeItem | undefined> = new vscode.EventEmitter<SFTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<SFTreeItem | undefined> = this._onDidChangeTreeData.event;
     private ignoreCache: boolean = true;
-	
+	private soql: SOQL;
 	private dataAccess: DataAccess;
 
-	constructor(dataAccess: DataAccess) {
+	constructor(dataAccess: DataAccess, soql: SOQL) {
 		this.dataAccess = dataAccess;
+		this.soql = soql;
 	}
 
 	refresh(): void {
@@ -266,7 +267,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			console.log(event.selection.length);
 			const CONFIG = vscode.workspace.getConfiguration('Explorer');
 			if(CONFIG.get('Multiselect')) {
-				SOQL.prepareSOQLForMultiSelect(event.selection);
+				this.soql.prepareSOQLInWebViewForMultiSelect(event.selection);
 			}
 			// Else do nothing
 		});
@@ -331,11 +332,14 @@ export class SFSchemaExplorer {
 	private treeDataProvider: SFSchemaProvider;
 	private dataAccess: DataAccess;
 	private metaInfo: MetaInfo;
+	private soql: SOQL;
 
 	constructor(context: vscode.ExtensionContext) {
 		// Creating a tree view with the right data provider
 		this.dataAccess = new DataAccess(context);
-		this.treeDataProvider = new SFSchemaProvider(this.dataAccess);
+		this.soql = new SOQL(context);
+
+		this.treeDataProvider = new SFSchemaProvider(this.dataAccess, this.soql);
 		
 		this.sfSchemaViewer = vscode.window.createTreeView('schemaExplorer', { treeDataProvider: this.treeDataProvider,
 		canSelectMany: true });
@@ -352,6 +356,6 @@ export class SFSchemaExplorer {
 		
 		vscode.commands.registerCommand('schemaExplorer.open', (node: SFTreeItem) => SFAPIOperations.openConnection(node.username));
 		// Todo: vscode.commands.registerCommand('schemaExplorer.includeAllFields', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepareQueryWithAllFields(node, nodes));
-		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepare(node, nodes));
+		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => this.soql.prepareSOQLInWebView(node));
 	}
 }

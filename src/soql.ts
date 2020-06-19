@@ -3,11 +3,22 @@ import * as vscode from 'vscode';
 import { SFTreeItem } from './schemaExplorer';
 import { Info } from './info';
 import { Constants } from './constants';
+import { FileUtil } from './fileUtil';
+import { SOQLView } from './views/soql';
 
 export class SOQL {
     private static objectName: string;
     private static fields: any;
-    public static context: vscode.ExtensionContext;
+    public context: vscode.ExtensionContext;
+    public util: FileUtil;
+    public soqlView: SOQLView;
+
+
+    constructor(context: vscode.ExtensionContext) {
+        this.context = context;
+        this.util = new FileUtil(context);
+        this.soqlView = new SOQLView(context);
+    }
     
     // TO Be used in a next version
     // private static insertText(getText: (i:number) => string, i: number = 0, wasEmpty: boolean = false): vscode.Position {
@@ -60,7 +71,18 @@ export class SOQL {
         // }
     }
 
-    private static buildQuery(objectName: string, fields: any) : string {
+    private static buildQueryForWebView(objectName: string, fields: any) : string {
+        let query = 'SELECT ';
+        for (let field of fields) {
+            query += `${field}, `;
+        }
+        let index = query.lastIndexOf(',');
+        query = query.slice(0, index);
+        query += ` FROM ${objectName}`;
+        return query;
+    }
+
+    private static buildQueryForFile(objectName: string, fields: any) : string {
         let query = 'SELECT\n';
         let count = 0;
         for (let field of fields) {
@@ -75,7 +97,7 @@ export class SOQL {
         return query;
     }
 
-    public static prepareSOQLForMultiSelect(nodes: SFTreeItem[]) {
+    public prepareSOQLForMultiSelect(nodes: SFTreeItem[]) {
         let objectName: string = '';
         let fields = [];
         for(let count=0; count <nodes.length; count++) {
@@ -92,34 +114,69 @@ export class SOQL {
         }
         console.log('objectName: ', objectName);
         console.log('fields: ', fields);
-        if(objectName !== '') {
-            //Info.display(SOQL.buildQuery(objectName, fields), 'query.txt');
+
+        return { 
+            objectName: objectName,
+            fields: fields
+        };
+    }
+
+    public prepareSOQLInFileForMultiSelect(nodes: SFTreeItem[]) {
+        const queryHelper = this.prepareSOQLForMultiSelect(nodes);
+        if(queryHelper.objectName !== '') {
+            this.util.displayContentInFile(SOQL.buildQueryForFile(queryHelper.objectName, queryHelper.fields), 'query.txt');
         }
     }
 
-    
+    public prepareSOQLInWebViewForMultiSelect(nodes: SFTreeItem[]) {
+        const queryHelper = this.prepareSOQLForMultiSelect(nodes);
+        if(queryHelper.objectName !== '') {
+            this.soqlView.displaySOQL(SOQL.buildQueryForWebView(queryHelper.objectName, queryHelper.fields));
+        }
+    }
 
-    public static prepare(node: SFTreeItem, nodes: SFTreeItem[]) {
+    public prepareSOQL(node: SFTreeItem) {
+        if(node.contextValue === Constants.OBJECT_CONTEXT ) {
+            if(SOQL.objectName !== node.label) {
+                SOQL.objectName = node.label;
+                SOQL.fields = new Set();
+            }
+        } else if(node.contextValue === Constants.FIELD_CONTEXT) {
+            if(SOQL.objectName !== node.parentNode) {
+                SOQL.objectName = node.parentNode;
+                SOQL.fields = new Set();
+            }
+            SOQL.fields.add(node.name);
+        }
+        return {
+            objectName: SOQL.objectName, 
+            fields: SOQL.fields
+        }
+    }
+
+    public prepareSOQLInFile(node: SFTreeItem){
         const CONFIG = vscode.workspace.getConfiguration('Explorer');
         console.log(CONFIG.get('Multiselect'));
-        // Checking if multiselect mode is off
         if(CONFIG.get('Multiselect')) {
             // Do nothing
         } else {
-            if(node.contextValue === Constants.OBJECT_CONTEXT ) {
-                if(SOQL.objectName !== node.label) {
-                    SOQL.objectName = node.label;
-                    SOQL.fields = new Set();
-                }
-            } else if(node.contextValue === Constants.FIELD_CONTEXT) {
-                if(SOQL.objectName !== node.parentNode) {
-                    SOQL.objectName = node.parentNode;
-                    SOQL.fields = new Set();
-                }
-                SOQL.fields.add(node.name);
-            }
+            const queryHelper = this.prepareSOQL(node);
             if(SOQL.objectName) {
-                //Info.display(SOQL.buildQuery(SOQL.objectName, SOQL.fields), 'query.txt');
+                this.util.displayContentInFile(SOQL.buildQueryForFile(queryHelper.objectName, 
+                    queryHelper.fields), 'query.txt');
+            }
+        }
+    }
+
+    public prepareSOQLInWebView(node: SFTreeItem){
+        const CONFIG = vscode.workspace.getConfiguration('Explorer');
+        console.log(CONFIG.get('Multiselect'));
+        if(CONFIG.get('Multiselect')) {
+            // Do nothing
+        } else {
+            const queryHelper = this.prepareSOQL(node);
+            if(SOQL.objectName) {
+                this.soqlView.displaySOQL(SOQL.buildQueryForWebView(queryHelper.objectName, queryHelper.fields));
             }
         }
     }

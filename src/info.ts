@@ -5,10 +5,12 @@ import * as path from 'path';
 import { SFAPIOperations } from './sfAPIOperations';
 import { SFTreeItem } from './schemaExplorer';
 import { Constants } from './constants';
+import { FileUtil } from './fileUtil';
 
 export class Info {
     
     public static context: vscode.ExtensionContext;
+    public util: FileUtil = new FileUtil(Info.context);
 
     private async getMoreInfo(node: SFTreeItem) {
         let moreInfo = node.moreInfo;
@@ -20,21 +22,8 @@ export class Info {
         return moreInfo;
     }
 
-    private static display(displayString: string, fileName: string) {
-        let filePath: string = '';
-        const rootPath = vscode.workspace.rootPath || Info.context.extensionPath;
-        filePath = path.join(rootPath, fileName);
-        fs.existsSync(filePath);
-        fs.writeFileSync(filePath, displayString, 'utf8');
-        var openPath = vscode.Uri.file(filePath);
-        console.log('openPath: ',openPath);
-        vscode.workspace.openTextDocument(openPath).then(doc => {
-            vscode.window.showTextDocument(doc);
-        });
-    }
-
     public async showMoreInfo(node: SFTreeItem) {
         const moreInfo = await this.getMoreInfo(node);
-        Info.display(JSON.stringify(moreInfo, null, 2), 'Info.json');
+        this.util.displayContentInFile(JSON.stringify(moreInfo, null, 2), 'Info.json');
     }
 }
