@@ -131,7 +131,7 @@ export class SOQL {
     public prepareSOQLInWebViewForMultiSelect(nodes: SFTreeItem[]) {
         const queryHelper = this.prepareSOQLForMultiSelect(nodes);
         if(queryHelper.objectName !== '') {
-            this.soqlView.displaySOQL(SOQL.buildQueryForWebView(queryHelper.objectName, queryHelper.fields));
+            this.soqlView.displaySOQL(SOQL.buildQueryForWebView(queryHelper.objectName, queryHelper.fields), nodes[0].username);
         }
     }
 
@@ -176,7 +176,7 @@ export class SOQL {
         } else {
             const queryHelper = this.prepareSOQL(node);
             if(SOQL.objectName) {
-                this.soqlView.displaySOQL(SOQL.buildQueryForWebView(queryHelper.objectName, queryHelper.fields));
+                this.soqlView.displaySOQL(SOQL.buildQueryForWebView(queryHelper.objectName, queryHelper.fields), node.username);
             }
         }
     }

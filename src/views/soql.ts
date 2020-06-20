@@ -13,6 +13,30 @@ export class SOQLView {
         this.context = context;
     }
 
+    private async runSOQL(soqlString : string, userName: string) {
+        let message = 'Fetch successful';
+        console.log("runSOQL.userName: ", userName);
+        vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: "Fetching records......",
+			cancellable: false
+		},async (progress: any, token: any) => {
+			console.log(progress, token);
+			try {
+                console.log("userName: ", userName);
+                console.log("soqlString: ", soqlString);
+				const conn = await SFAPIOperations.getConnection(userName);
+				console.log('soqlString: ',soqlString);
+                const records = await SFAPIOperations.fetchRecords(conn, soqlString);
+                console.log(records); // This line is just to check connection validity
+				vscode.window.showInformationMessage(message, {modal: false});
+			} catch(error) {
+				message = 'Unable to fetch records';
+				vscode.window.showErrorMessage(error.message, {modal: false});
+			}
+		});
+    }
+
     private generateWebView(soqlString: string) {
         return `<!DOCTYPE html>
                 <html lang="en">
@@ -23,16 +47,29 @@ export class SOQLView {
                 </head>
                 <body>
                     <div style="width: 100%">
-                    <textarea name="soql" rows="6" style="width: 90%;">
-                        ${soqlString}
-                    </textarea>
+                        <textarea id="soql-textarea" name="soql" rows="6" style="width: 90%;">${soqlString}</textarea>
+                        <button onclick= "runSOQL();">Run Query</button>
+                        <div id="query-status"></div>
                     </div>
+                    //scripts here
+                    <script>
+                        function runSOQL() {
+                            const soqlString = document.getElementById("soql-textarea").value;
+                            console.log("soqlString: ", soqlString);
+                            const vscode = acquireVsCodeApi();
+                            vscode.postMessage({
+                                command: 'runSOQL',
+                                text: soqlString
+                            });
+                        }
+                    </script>
                 </body>
                 </html>`;
     }
 
 
-    public displaySOQL(soqlString: string) {
+    public displaySOQL(soqlString: string, userName: string) {
+        console.log("userName: ",userName);
         const columnToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
         : undefined;
@@ -58,6 +95,19 @@ export class SOQLView {
                     this.currentPanel = undefined;
                 },
                 null
+            );
+
+            // Handle messages from the webview
+            this.currentPanel.webview.onDidReceiveMessage(
+                (message: { command: any; text: string; }) => {
+                    switch (message.command) {
+                      case 'runSOQL':
+                        this.runSOQL(message.text, userName);
+                        return;
+                    }
+                },
+                undefined,
+                this.context
             );
         }
     }
