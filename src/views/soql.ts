@@ -8,14 +8,42 @@ import { Constants } from '../constants';
 export class SOQLView {
     private context: vscode.ExtensionContext;
     private currentPanel: vscode.WebviewPanel | any = undefined;
+    
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
     }
 
-    private async runSOQL(soqlString : string, userName: string) {
+    private async runSOQL(soqlString : string, username: string) {
+        let records: any = [];
         let message = 'Fetch successful';
-        console.log("runSOQL.userName: ", userName);
+        console.log("runSOQL.userName: ", username);
+
+        records = await this.promisifiedWithProgress(soqlString, username);
+        return records;
+        // vscode.window.withProgress({
+		// 	location: vscode.ProgressLocation.Notification,
+		// 	title: "Fetching records......",
+		// 	cancellable: false
+		// },async (progress: any, token: any) => {
+		// 	console.log(progress, token);
+		// 	try {
+		// 		const conn = await SFAPIOperations.getConnection(userName);
+        //         records = await SFAPIOperations.fetchRecords(conn, soqlString);
+        //         records.forEach(function(index: any){ delete index.attributes });
+        //         console.log('runSOQL: ',records); // This line is just to check connection validity
+        //         vscode.window.showInformationMessage(message, {modal: false});
+        //         return records;
+		// 	} catch(error) {
+		// 		message = 'Unable to fetch records';
+		// 		vscode.window.showErrorMessage(error.message, {modal: false});
+		// 	}
+        // });
+        //return records;
+    }
+
+    private promisifiedWithProgress = (soqlString : string, userName: string) => new Promise((resolve, reject) => {
+        let message = 'Fetch successful';
         vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
 			title: "Fetching records......",
@@ -23,19 +51,20 @@ export class SOQLView {
 		},async (progress: any, token: any) => {
 			console.log(progress, token);
 			try {
-                console.log("userName: ", userName);
-                console.log("soqlString: ", soqlString);
 				const conn = await SFAPIOperations.getConnection(userName);
-				console.log('soqlString: ',soqlString);
                 const records = await SFAPIOperations.fetchRecords(conn, soqlString);
-                console.log(records); // This line is just to check connection validity
-				vscode.window.showInformationMessage(message, {modal: false});
+                records.forEach(function(index: any){ delete index.attributes });
+                console.log('runSOQL: ',records); // This line is just to check connection validity
+                vscode.window.showInformationMessage(message, {modal: false});
+                //return records;
+                resolve(records);
 			} catch(error) {
-				message = 'Unable to fetch records';
-				vscode.window.showErrorMessage(error.message, {modal: false});
+                message = 'Unable to fetch records';
+                vscode.window.showErrorMessage(error.message, {modal: false});
+                reject(error);
 			}
-		});
-    }
+        });
+    })
 
     private generateWebView(soqlString: string) {
         return `<!DOCTYPE html>
@@ -49,19 +78,29 @@ export class SOQLView {
                     <div style="width: 100%">
                         <textarea id="soql-textarea" name="soql" rows="6" style="width: 90%;">${soqlString}</textarea>
                         <button onclick= "runSOQL();">Run Query</button>
-                        <div id="query-status"></div>
+                        <div id="query-result-container">
+                        </div>
                     </div>
                     //scripts here
                     <script>
                         function runSOQL() {
                             const soqlString = document.getElementById("soql-textarea").value;
-                            console.log("soqlString: ", soqlString);
                             const vscode = acquireVsCodeApi();
                             vscode.postMessage({
                                 command: 'runSOQL',
                                 text: soqlString
                             });
                         }
+                        // Handle the message inside the webview
+                        window.addEventListener('message', event => {
+                            const message = event.data; // The JSON data our extension sent
+
+                            switch (message.command) {
+                                case 'displayQuery':
+                                    console.log('displayQuery in html');
+                                    break;
+                            }
+                        });
                     </script>
                 </body>
                 </html>`;
@@ -99,10 +138,15 @@ export class SOQLView {
 
             // Handle messages from the webview
             this.currentPanel.webview.onDidReceiveMessage(
-                (message: { command: any; text: string; }) => {
+               async (message: { command: any; text: string; }) => {
                     switch (message.command) {
                       case 'runSOQL':
-                        this.runSOQL(message.text, userName);
+                        //this.runSOQL(message.text, userName);
+                        const records = await this.runSOQL(message.text, userName);
+                            //if(records != null) {
+                                console.log('records in panel: ',records);
+                                this.currentPanel.webview.postMessage({ command: 'displayQuery' });
+                            //}
                         return;
                     }
                 },
