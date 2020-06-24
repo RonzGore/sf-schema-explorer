@@ -50,7 +50,7 @@ export class SFAPIOperations {
 
     public static async fetchRecords(conn : any, queryString: string) {
         console.log(queryString);
-        const recordsInfo = await (await conn.query(queryString + ' LIMIT 200'));
+        const recordsInfo = await (await conn.query(queryString /*+ ' LIMIT 200'*/));
         return recordsInfo.records;
     }
 
