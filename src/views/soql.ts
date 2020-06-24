@@ -179,20 +179,21 @@ export class SOQLView {
     }
 
 
-    public displaySOQL(soqlString: string, userName: string) {
-        console.log("userName: ",userName);
+    public displaySOQL(soqlString: string, username: string) {
+        console.log("userName: ",username);
         const columnToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
         : undefined;
         if (this.currentPanel) {
             // If we already have a panel, show it in the target column
             this.currentPanel.webview.html = this.generateWebView(soqlString);
+            this.currentPanel.name = `${username} - Query Runner`;
             this.currentPanel.reveal(columnToShowIn);
         } else {
             // Otherwise, create a new panel
             this.currentPanel = vscode.window.createWebviewPanel(
-                'INFO',
-                'More Info',
+                'SOQL',
+                `${username} - Query Runner`,
                 vscode.ViewColumn.One,
                 {
                     enableScripts: true
@@ -214,7 +215,7 @@ export class SOQLView {
                     switch (message.command) {
                       case 'runSOQL':
                         //this.runSOQL(message.text, userName);
-                        const records = await this.runSOQL(message.text, userName);
+                        const records = await this.runSOQL(message.text, username);
                             //if(records != null) {
                                 console.log('records in panel: ',records);
                                 this.currentPanel.webview.postMessage({ command: 'displayQuery', records: records});
