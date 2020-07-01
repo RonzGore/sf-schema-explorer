@@ -84,7 +84,16 @@
 			{
 				"command": "schemaExplorer.open",
 				"title": "Open Connection"
+			},
+			{
+				"command": "schemaExplorer.copyToClipboard",
+				"title": "Copy to Clipboard",
+				"icon": {
+					"light": "resources/light/clippy.svg",
+					"dark": "resources/dark/clippy.svg"
+				}
 			}
+
 		],
 		"menus": {
 			"view/title": [
@@ -102,6 +111,16 @@
 				{
 					"command": "schemaExplorer.checkStatus",
 					"when": "view == schemaExplorer && viewItem == connection"
+				},
+				{
+					"command": "schemaExplorer.copyToClipboard",
+					"when": "view == schemaExplorer && viewItem == object",
+					"group": "inline"
+				},
+				{
+					"command": "schemaExplorer.copyToClipboard",
+					"when": "view == schemaExplorer && viewItem == field",
+					"group": "inline"
 				},
 				{
 					"command": "schemaExplorer.refreshNodeAndChildren",
