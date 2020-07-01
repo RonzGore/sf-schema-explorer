@@ -48,6 +48,12 @@ export class SFAPIOperations {
         return fieldsInfo;
     }
 
+    public static async fetchRecords(conn : any, queryString: string) {
+        console.log(queryString);
+        const recordsInfo = await (await conn.query(queryString /*+ ' LIMIT 200'*/));
+        return recordsInfo.records;
+    }
+
     // function for opening connection based on username provided
     public static async openConnection(userName: string) {
         

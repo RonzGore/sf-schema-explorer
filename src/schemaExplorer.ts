@@ -138,6 +138,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 			sObject.connection = conn;
 			sObject.moreInfo = metadata[count];
 			sObject.name = metadata[count].name;
+			sObject.username = element.username;
 			sObjects.push(sObject);
 		}
 		return sObjects;
@@ -178,6 +179,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 					sObject.relationshipName = `${element.relationshipName}.${metadata[count].relationshipName}`;
 				}
 				sObject.depth = currentDepth;
+				sObject.username = element.username;
 				sObjectFields.push(sObject);
 			} else {
 				const sObjectField = new SFTreeItem(metadata[count].label, 
@@ -203,6 +205,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 					sObjectField.name = `${element.relationshipName}.${metadata[count].name}`;
 				}
 				sObjectField.depth = element.depth+1;
+				sObjectField.username = element.username;
 				sObjectFields.push(sObjectField);
 			}
 			
