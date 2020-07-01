@@ -21,4 +21,8 @@ export class FileUtil {
             vscode.window.showTextDocument(doc);
         });
     }
+
+    public static copyToClipboard(textToCopy: string) {
+        vscode.env.clipboard.writeText(textToCopy);
+    }
 }

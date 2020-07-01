@@ -8,6 +8,7 @@ import { Info } from './info';
 import { DataAccess } from './localDataAccess';
 import { Constants } from './constants';
 import { MetaInfo } from './views/metaInfo';
+import { FileUtil } from './fileUtil';
 
 export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 
@@ -92,6 +93,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 				connection.accessToken = sortedOrgs[count].accessToken;
 				connection.setContext(Constants.CONNECTION_CONTEXT);
 				connection.moreInfo = sortedOrgs[count];
+				connection.name =  sortedOrgs[count].username;
 				connections.push(connection);
 			}
 			this.ignoreCache = true;
@@ -124,7 +126,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 		
 		element.numberOfChildren = metadata.length || 0;
 		if(element.numberOfChildren > 0) {
-			element.description = `${element.description} | SObjects:${element.numberOfChildren}`;
+			element.description = `${element.name} | Level: ${currentDepth} | SObjects:${element.numberOfChildren}`;
 		}
 		for(let count=0; count < metadata.length; count++ ) {
 			const description =  `${metadata[count].name} | Level: ${currentDepth}`;
@@ -149,7 +151,7 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 		const sObjectFields: SFTreeItem[] = [];
 		element.numberOfChildren = metadata.length || 0;
 		if(element.numberOfChildren > 0) {
-			element.description = `${element.description} | Fields:${element.numberOfChildren}`;
+			element.description = `${element.name} | Level: ${element.depth} | Fields:${element.numberOfChildren}`;
 		}
 		for(let count=0; count < metadata.length; count++ ) {
 			let description = metadata[count].name;
@@ -360,5 +362,6 @@ export class SFSchemaExplorer {
 		vscode.commands.registerCommand('schemaExplorer.open', (node: SFTreeItem) => SFAPIOperations.openConnection(node.username));
 		// Todo: vscode.commands.registerCommand('schemaExplorer.includeAllFields', (node: SFTreeItem, nodes: SFTreeItem[]) => SOQL.prepareQueryWithAllFields(node, nodes));
 		vscode.commands.registerCommand('extension.insertField', (node: SFTreeItem, nodes: SFTreeItem[]) => this.soql.prepareSOQLInWebView(node));
+		vscode.commands.registerCommand('schemaExplorer.copyToClipboard', (node: SFTreeItem) => FileUtil.copyToClipboard(node.name));
 	}
 }
