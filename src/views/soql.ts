@@ -1,10 +1,7 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 
 import { SFAPIOperations } from '../sfAPIOperations';
 import { FileUtil } from '../fileUtil';
-import { SFTreeItem } from '../schemaExplorer';
-import { Constants } from '../constants';
 
 export class SOQLView {
     private context: vscode.ExtensionContext;
@@ -37,7 +34,7 @@ export class SOQLView {
 			try {
 				const conn = await SFAPIOperations.getConnection(userName);
                 const records = await SFAPIOperations.fetchRecords(conn, soqlString);
-                records.forEach(function(index: any){ delete index.attributes });
+                records.forEach(function(index: any){ delete index.attributes; });
                 console.log('runSOQL: ',records); // This line is just to check connection validity
                 vscode.window.showInformationMessage(message, {modal: false});
                 resolve(records);
