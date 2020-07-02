@@ -39,7 +39,7 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 2. **Get more information about the orgs(we can also call them connections) and open them in browser**
 
-![Info of Orgs and Open the Org](./media/MoreInfo.png)
+![Info of Orgs and Open the Org](./media/org-info-open.gif)
 
 3. **Get a list of Salesforce Objects(Including non customizable objects like ListViews, ApexClasses etc.) from the selected org and get a lot more info for any of these objects at the click of a button; whether the object is triggerable, searchable, child relationships etc.**
 
@@ -49,9 +49,9 @@ This VSCode extension works only once you have installed Salesforce CLI on your 
 
 ![List all fields](./media/list-fields.gif)
 
-5. **Create SOQLs (parent relationships are also supported) by clicking on the fields/relationships of your choice. You can either work in single-select(Default) or multiselect mode**
+5. **Create and run SOQLs (parent relationships upto 5 levels are supported) by clicking on the fields/relationships of your choice. You can either work in single-select(Default) or multiselect mode**
 
-![Create SOQLs](./media/createSOQL.png)
+![Create SOQLs](./media/CreateSOQL.png)
 
 # Issue Reporting/Feature Requests
 
@@ -83,7 +83,7 @@ as this Software is open source. PRs are super welcome!
 3. Generate and run SOQL query
 4. Copy SOQL query to clipboard
 5. Org, object and field info in a more user friendly and readable format
-
+(./media/MoreInfo.png)
 
 ### 0.2.6
 1. Performance improvements while fetching objects and fields
