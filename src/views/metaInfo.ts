@@ -16,7 +16,7 @@ export class MetaInfo {
     private getJPPickerJSResource() : vscode.Uri {
         // Local path to main script run in the webview
         const jpPickerJSPathOnDisk = vscode.Uri.file(
-            path.join(this.context.extensionPath, "src", "views", "lib", "jsonpath-picker.min.js")
+            path.join(this.context.extensionPath, "resources", "lib", "jsonpath-picker.min.js")
         );
         return jpPickerJSPathOnDisk.with({ scheme: "vscode-resource" });
     }
@@ -24,7 +24,7 @@ export class MetaInfo {
     private getJPPickerCSSResource() : vscode.Uri {
         // Local path to main script run in the webview
         const jpPickerCSSPathOnDisk = vscode.Uri.file(
-            path.join(this.context.extensionPath, "src", "views", "lib", "jsonpath-picker.min.css")
+            path.join(this.context.extensionPath, "resources", "lib", "jsonpath-picker.min.css")
         );
         return jpPickerCSSPathOnDisk.with({ scheme: "vscode-resource" });
     }
