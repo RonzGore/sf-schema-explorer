@@ -61,7 +61,7 @@ export class SOQLView {
                     <div style="width: 100%; mqrgin-top: 2% !important">
                         <textarea class="soql-textarea" id="soql-textarea" name="soql" rows="6">${soqlString}</textarea>
                     </div>
-                    <div>
+                    <div class="buttons-div">
                         <button class="query-button" onclick="runSOQL();">Run Query</button>
                         <button class="clipboard-button" onclick="copyToClipboard();">Copy to Clipboard</button>
                         </div>
@@ -180,7 +180,7 @@ export class SOQLView {
                         body.vscode-light {
                             color: black;
                         }
-                      
+
                         body.vscode-dark {
                             color: #a8abaff2;
                         }
@@ -193,30 +193,60 @@ export class SOQLView {
                             margin: 1%;
                             background-color: #0a77e8;
                             border-color: #0a77e8;
-                            color: #eaf1f1;
                             padding: 5px;
                         }
 
                         .clipboard-button {
                             margin: 1%;
-                            background-color: #91989e;
-                            border-color: #91989e;
-                            color: #eaf1f1;
+                            background-color: #8a8f92;
+                            border-color: #8a8f92;
                             padding: 5px;
                         }
 
                        .soql-textarea {
                             width: 100%;
-                            background-color: #2d38454f;
-                            color: #a8abaff2;
                             font-size: medium;
-                        } 
+                            color: inherit;
+                        }
 
-                        table, td, th {
-                            border: 1px solid #eaf1f185;
+
+                        body.vscode-dark .query-button {
+                            color: #eaf1f1;
+                        }
+
+                        body.vscode-light .query-button {
+                            color: #f8f8f9;
+                        }
+
+
+                        body.vscode-dark .clipboard-button {
+                            color: #eaf1f1; /*#f8f8f9*/
+                        }
+
+                        body.vscode-light .clipboard-button {
+                            color: #f8f8f9;
                         }
                         
-                        table {
+
+                        body.vscode-dark .soql-textarea {
+                            color: #a8abaff2;
+                            background-color: #2d38454f;
+                        }
+                        
+                        body.vscode-light .soql-textarea {
+                            color: #46484af2;
+                            background-color: #bfc6ce4f;
+                        }
+
+                        body.vscode-dark .soql-table, td, th {
+                            border: 1px solid #eaf1f185; /*#474a4a85*/
+                        }
+
+                        body.vscode-light .soql-table, td, th {
+                            border: 1px solid #474a4a85;
+                        }
+                        
+                        table.soql-table {
                             border-collapse: collapse;
                             width: 100%;
                             height: auto;
