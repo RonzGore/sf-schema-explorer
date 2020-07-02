@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { SFAPIOperations } from '../sfAPIOperations';
+import { FileUtil } from '../fileUtil';
 import { SFTreeItem } from '../schemaExplorer';
 import { Constants } from '../constants';
 
@@ -57,12 +58,12 @@ export class SOQLView {
                     <title>SOQL</title>
                 </head>
                 <body>
-                    <div style="width: 100%; mqrgin-top: 2%">
+                    <div style="width: 100%; mqrgin-top: 2% !important">
                         <textarea class="soql-textarea" id="soql-textarea" name="soql" rows="6">${soqlString}</textarea>
                     </div>
                     <div>
                         <button class="query-button" onclick="runSOQL();">Run Query</button>
-                        <button class="clipboard-button" onclick="">Copy to Clipboard</button>
+                        <button class="clipboard-button" onclick="copyToClipboard();">Copy to Clipboard</button>
                         </div>
                     <div id="query-result-container" style="overflow-x:auto; overflow-y:auto;">
                         
@@ -73,6 +74,14 @@ export class SOQLView {
                             const soqlString = document.getElementById("soql-textarea").value;
                             vscode.postMessage({
                                 command: 'runSOQL',
+                                text: soqlString
+                            });
+                        }
+
+                        function copyToClipboard() {
+                            const soqlString = document.getElementById("soql-textarea").value;
+                            vscode.postMessage({
+                                command: 'copyToClipboard',
                                 text: soqlString
                             });
                         }
@@ -168,6 +177,18 @@ export class SOQLView {
                         });
                     </script>
                     <style>
+                        body.vscode-light {
+                            color: black;
+                        }
+                      
+                        body.vscode-dark {
+                            color: #a8abaff2;
+                        }
+                      
+                        body.vscode-high-contrast {
+                            color: red;
+                        }
+
                         .query-button {
                             margin: 1%;
                             background-color: #0a77e8;
@@ -175,11 +196,22 @@ export class SOQLView {
                             color: #eaf1f1;
                             padding: 5px;
                         }
+
+                        .clipboard-button {
+                            margin: 1%;
+                            background-color: #91989e;
+                            border-color: #91989e;
+                            color: #eaf1f1;
+                            padding: 5px;
+                        }
+
                        .soql-textarea {
                             width: 100%;
                             background-color: #2d38454f;
-                            color: #ffff;
-                       } 
+                            color: #a8abaff2;
+                            font-size: medium;
+                        } 
+
                         table, td, th {
                             border: 1px solid #eaf1f185;
                         }
@@ -240,13 +272,19 @@ export class SOQLView {
             this.currentPanel.webview.onDidReceiveMessage(
                async (message: { command: any; text: string; }) => {
                     switch (message.command) {
-                      case 'runSOQL':
-                        //this.runSOQL(message.text, userName);
-                        const records = await this.runSOQL(message.text, username);
-                            //if(records != null) {
-                                console.log('records in panel: ',records);
-                                this.currentPanel.webview.postMessage({ command: 'displayQuery', records: records});
-                            //}
+                        case 'copyToClipboard': {
+                            FileUtil.copyToClipboard(message.text);
+                            //this.currentPanel.webview.postMessage({ command: 'Copied'});
+                            return;
+                        }                            
+
+                        case 'runSOQL': {
+                            console.log('message.command: ',message.command);
+                            const records = await this.runSOQL(message.text, username);
+                            console.log('records in panel: ',records);
+                            this.currentPanel.webview.postMessage({ command: 'displayQuery', records: records});
+                            return;
+                        }
                         return;
                     }
                 },
