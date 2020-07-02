@@ -83,7 +83,7 @@ as this Software is open source. PRs are super welcome!
 3. Generate and run SOQL query
 4. Copy SOQL query to clipboard
 5. Org, object and field info in a more user friendly and readable format
-(./media/MoreInfo.png)
+![Org, Object and Field Info More Readable](./media/MoreInfo.png)
 
 ### 0.2.6
 1. Performance improvements while fetching objects and fields
