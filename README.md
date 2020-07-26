@@ -77,6 +77,12 @@ as this Software is open source. PRs are super welcome!
 
 # Release Notes
 
+### 0.5.1
+1. Fixed the issue: 'Getting message that at least one org should be authenticated' even
+when the orgs are authenticated. Thanks [dkadam77](https://github.com/dkadam77) for testing on a Windows machine and suggesting the fix.
+2. Fields in the explorer render sorted-by field labels alphabatically. Earlier only
+connections and objects were rendered alphabatically. 
+
 ### 0.5.0
 1. Multilevel support upto 5 level for object and fields
 2. Copy any field or object name to clip board
