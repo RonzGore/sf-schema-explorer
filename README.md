@@ -79,7 +79,7 @@ as this Software is open source. PRs are super welcome!
 
 ### 0.5.1
 1. Fixed the issue: 'Getting message that at least one org should be authenticated' even
-when the orgs are authenticated.
+when the orgs are authenticated. Thanks @dkadam77 for testing on a Windows machine and suggesting the fix.
 2. Fields in the explorer render sorted-by field labels alphabatically. Earlier only
 connections and objects were rendered alphabatically. 
 
