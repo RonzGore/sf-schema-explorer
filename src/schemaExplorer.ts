@@ -147,26 +147,27 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 	private async getFields(element: SFTreeItem) : Promise<SFTreeItem[]> {
 		const conn = element.connection;
 		const sObjectName = element.name;
-		const metadata = await SFAPIOperations.fetchFields(conn, sObjectName);
+		const fieldsInfo = await SFAPIOperations.fetchFields(conn, sObjectName);
+		const sortedFieldsInfo = sortBy(fieldsInfo, 'label'); // Sort by field label
 		const sObjectFields: SFTreeItem[] = [];
-		element.numberOfChildren = metadata.length || 0;
+		element.numberOfChildren = sortedFieldsInfo.length || 0;
 		if(element.numberOfChildren > 0) {
 			element.description = `${element.name} | Level: ${element.depth} | Fields:${element.numberOfChildren}`;
 		}
-		for(let count=0; count < metadata.length; count++ ) {
-			let description = metadata[count].name;
+		for(let count=0; count < sortedFieldsInfo.length; count++ ) {
+			let description = sortedFieldsInfo[count].name;
 			const currentDepth = element.depth+1;
-			if(metadata[count].relationshipName !== null && element.depth < 4) {
-				description = `${metadata[count].relationshipName}.${description}| Level: ${currentDepth}`;
-				const sObject = new SFTreeItem(metadata[count].label, description, 
+			if(sortedFieldsInfo[count].relationshipName !== null && element.depth < 4) {
+				description = `${sortedFieldsInfo[count].relationshipName}.${description}| Level: ${currentDepth}`;
+				const sObject = new SFTreeItem(sortedFieldsInfo[count].label, description, 
 					vscode.TreeItemCollapsibleState.Collapsed);
 				const objectSVGName = `objects${currentDepth}.svg`;
 				sObject.setIconPath( path.join(__filename, '..', '..', 'resources', 'light', objectSVGName), 
 				path.join(__filename, '..', '..', 'resources', 'dark', objectSVGName));
 				sObject.setContext(Constants.OBJECT_CONTEXT);
 				sObject.connection = conn;
-				sObject.moreInfo = metadata[count];
-				sObject.name = metadata[count].referenceTo[0];
+				sObject.moreInfo = sortedFieldsInfo[count];
+				sObject.name = sortedFieldsInfo[count].referenceTo[0];
 				if(element.parentNode === '') {
 					sObject.parentNode = sObjectName;
 				} else {
@@ -174,15 +175,15 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 				
 				}
 				if(element.relationshipName === '') {
-					sObject.relationshipName = metadata[count].relationshipName;
+					sObject.relationshipName = sortedFieldsInfo[count].relationshipName;
 				} else {
-					sObject.relationshipName = `${element.relationshipName}.${metadata[count].relationshipName}`;
+					sObject.relationshipName = `${element.relationshipName}.${sortedFieldsInfo[count].relationshipName}`;
 				}
 				sObject.depth = currentDepth;
 				sObject.username = element.username;
 				sObjectFields.push(sObject);
 			} else {
-				const sObjectField = new SFTreeItem(metadata[count].label, 
+				const sObjectField = new SFTreeItem(sortedFieldsInfo[count].label, 
 					`${description} | Level: ${currentDepth}`, vscode.TreeItemCollapsibleState.None);
 				sObjectField.setCommand({
 						command: 'extension.insertField',
@@ -194,15 +195,15 @@ export class SFSchemaProvider implements vscode.TreeDataProvider<SFTreeItem> {
 					sObjectField.parentNode = element.parentNode;
 				
 				}
-				sObjectField.moreInfo = metadata[count];
+				sObjectField.moreInfo = sortedFieldsInfo[count];
 				const fieldsSVGName = `fields${currentDepth}.svg`;
 				sObjectField.setIconPath(path.join(__filename, '..', '..', 'resources', 'light', fieldsSVGName), 
 				path.join(__filename, '..', '..', 'resources', 'dark', fieldsSVGName));
 				sObjectField.setContext(Constants.FIELD_CONTEXT);
 				if(element.relationshipName === '') {
-					sObjectField.name = metadata[count].name;
+					sObjectField.name = sortedFieldsInfo[count].name;
 				} else {
-					sObjectField.name = `${element.relationshipName}.${metadata[count].name}`;
+					sObjectField.name = `${element.relationshipName}.${sortedFieldsInfo[count].name}`;
 				}
 				sObjectField.depth = element.depth+1;
 				sObjectField.username = element.username;

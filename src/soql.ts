@@ -99,7 +99,7 @@ export class SOQL {
         return {
             objectName: SOQL.objectName, 
             fields: SOQL.fields
-        }
+        };
     }
 
     public prepareSOQLInFile(node: SFTreeItem){

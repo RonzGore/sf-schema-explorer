@@ -10,7 +10,7 @@ export class SFAPIOperations {
     public static readonly promisifiedExec = util.promisify(child_process.exec);
     
     public static async getOrgsInfo(): Promise<any> {
-        const { stdout } = await this.promisifiedExec('SFDX_JSON_TO_STDOUT=true sfdx force:org:list --json');
+        const { stdout } = await this.promisifiedExec('sfdx force:org:list --json');
         const jsonOutput = JSON.parse(stdout);
         if(jsonOutput.status === 0) {
             const nonScratchOrgs = jsonOutput.result.nonScratchOrgs || [];
@@ -64,7 +64,7 @@ export class SFAPIOperations {
 		},async (progress: any, token: any) => {
 			console.log(progress, token);
 			try {
-				const { stdout } = await this.promisifiedExec('SFDX_JSON_TO_STDOUT=true sfdx force:org:open -u '+ userName +' --json');
+				const { stdout } = await this.promisifiedExec('sfdx force:org:open -u '+ userName +' --json');
 			} catch(error) {
 				vscode.window.showErrorMessage(error.message, {modal: false});
 			}
