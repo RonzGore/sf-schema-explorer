@@ -179,7 +179,7 @@
 		"vscode-test": "^1.3.0"
 	},
 	"dependencies": {
-		"@salesforce/core": "^2.4.1",
+		"@salesforce/core": "^3.32.12",
 		"lodash": "^4.17.15"
 	}
 }
